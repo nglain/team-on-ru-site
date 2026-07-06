@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadSell — AI-агент автономных продаж · TeamON</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0c0c12;
+    --surface-2: #121218;
+    --surface-3: #1a1a22;
+    --border: #252530;
+    --text: #f0eff5;
+    --text-dim: #9594a8;
+    --text-muted: #5e5d70;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --gold: #feca57;
+    --gold-dim: rgba(254, 202, 87, 0.06);
+    --gold-glow: rgba(254, 202, 87, 0.2);
+    --green: #55efc4;
+    --green-dim: rgba(85, 239, 196, 0.08);
+    --green-glow: rgba(85, 239, 196, 0.2);
+    --hot: #fd7272;
+    --hot-dim: rgba(253, 114, 114, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 1000px 700px at 20% -10%, rgba(254, 202, 87, 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 900px at 80% 110%, rgba(85, 239, 196, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 500px 500px at 50% 50%, rgba(108, 92, 231, 0.025) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 28px 120px;
+  }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes dataFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .fadeUp {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fadeUp.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---- NAV ---- */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .nav-logo-text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  .nav-badge {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    border: 1px solid rgba(254, 202, 87, 0.3);
+    border-radius: 6px;
+    padding: 4px 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    text-align: center;
+    padding: 0 0 72px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .hero-title .gold { color: var(--gold); }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto 12px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .hero-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--gold);
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+    margin-bottom: 8px;
+  }
+
+  /* ---- SECTION TITLES ---- */
+  .section-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  /* ---- TWO AGENTS ---- */
+  .agents-section {
+    margin-bottom: 96px;
+  }
+
+  .agents-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .agents-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    align-items: stretch;
+    position: relative;
+  }
+
+  .agent-card {
+    border-radius: 20px;
+    padding: 36px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .agent-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .agent-card--lead {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.15);
+  }
+
+  .agent-card--lead:hover {
+    box-shadow: 0 8px 40px rgba(254, 202, 87, 0.08);
+  }
+
+  .agent-card--sell {
+    background: var(--surface);
+    border: 1px solid rgba(85, 239, 196, 0.15);
+  }
+
+  .agent-card--sell:hover {
+    box-shadow: 0 8px 40px rgba(85, 239, 196, 0.08);
+  }
+
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+  }
+
+  .agent-card--lead::before {
+    background: radial-gradient(ellipse at 50% -20%, rgba(254, 202, 87, 0.08), transparent 70%);
+  }
+
+  .agent-card--sell::before {
+    background: radial-gradient(ellipse at 50% -20%, rgba(85, 239, 196, 0.08), transparent 70%);
+  }
+
+  .agent-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .agent-icon--lead {
+    background: var(--gold-dim);
+    border: 1px solid rgba(254, 202, 87, 0.2);
+  }
+
+  .agent-icon--sell {
+    background: var(--green-dim);
+    border: 1px solid rgba(85, 239, 196, 0.2);
+  }
+
+  .agent-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .agent-role--lead { color: var(--gold); }
+  .agent-role--sell { color: var(--green); }
+
+  .agent-name {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .agent-name--lead { color: var(--gold); }
+  .agent-name--sell { color: var(--green); }
+
+  .agent-persona {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .agent-when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .agent-skills {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .agent-skill {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+
+  .agent-skill:hover {
+    background: var(--surface-2);
+  }
+
+  .agent-skill code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .agent-card--lead .agent-skill code {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(254, 202, 87, 0.15);
+  }
+
+  .agent-card--sell .agent-skill code {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(85, 239, 196, 0.15);
+  }
+
+  /* ---- CONNECTOR (between agents) ---- */
+  .agents-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    position: relative;
+    min-width: 100px;
+  }
+
+  .connector-line {
+    width: 2px;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .connector-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(254, 202, 87, 0.4), rgba(108, 92, 231, 0.3), rgba(85, 239, 196, 0.4));
+    background-size: 100% 200%;
+    animation: dataFlow 3s linear infinite;
+  }
+
+  .connector-hub {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .connector-hub::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(108, 92, 231, 0.15), transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  .connector-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    margin: 12px 0;
+  }
+
+  .connector-arrow {
+    font-size: 18px;
+    color: var(--accent-light);
+    margin: 8px 0;
+  }
+
+  /* ---- FUNNEL ---- */
+  .funnel-section {
+    margin-bottom: 96px;
+  }
+
+  .funnel-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .funnel-stages {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+  }
+
+  .funnel-stage {
+    border-radius: 16px;
+    padding: 28px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .funnel-stage--night {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.1);
+  }
+
+  .funnel-stage--day {
+    background: var(--surface);
+    border: 1px solid rgba(85, 239, 196, 0.1);
+  }
+
+  .funnel-stage--close {
+    background: var(--surface);
+    border: 1px solid rgba(253, 114, 114, 0.15);
+  }
+
+  .funnel-stage-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .funnel-stage-icon {
+    font-size: 20px;
+  }
+
+  .funnel-stage-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .funnel-stage--night .funnel-stage-title { color: var(--gold); }
+  .funnel-stage--day .funnel-stage-title { color: var(--green); }
+  .funnel-stage--close .funnel-stage-title { color: var(--hot); }
+
+  .funnel-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+  }
+
+  .funnel-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-size: 13px;
+    color: var(--text-dim);
+    transition: background 0.2s;
+  }
+
+  .funnel-step:hover {
+    background: var(--surface-3);
+  }
+
+  .funnel-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .funnel-stage--night .funnel-step-num {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid rgba(254, 202, 87, 0.15);
+  }
+
+  .funnel-stage--day .funnel-step-num {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(85, 239, 196, 0.15);
+  }
+
+  .funnel-stage--close .funnel-step-num {
+    background: var(--hot-dim);
+    color: var(--hot);
+    border: 1px solid rgba(253, 114, 114, 0.15);
+  }
+
+  .funnel-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+  }
+
+  .funnel-connector-arrow {
+    font-size: 20px;
+    color: var(--text-muted);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* ---- UNIT ECONOMICS ---- */
+  .economics-section {
+    margin-bottom: 96px;
+  }
+
+  .economics-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .economics-funnel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .econ-step {
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s;
+  }
+
+  .econ-step:hover {
+    transform: scale(1.02);
+  }
+
+  .econ-step--1 {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.1);
+    max-width: 100%;
+  }
+
+  .econ-step--2 {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.15);
+    max-width: 82%;
+  }
+
+  .econ-step--3 {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.25);
+    max-width: 55%;
+  }
+
+  .econ-step--4 {
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    max-width: 38%;
+    box-shadow: 0 4px 30px rgba(254, 202, 87, 0.1);
+  }
+
+  .econ-step-label {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .econ-step-value {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--gold);
+  }
+
+  .econ-step--4 .econ-step-label {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .econ-step--4 .econ-step-value {
+    font-size: 24px;
+  }
+
+  .econ-arrow {
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-muted);
+    padding: 2px 0;
+  }
+
+  .econ-result {
+    text-align: center;
+    margin-top: 32px;
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.12);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .econ-result-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .econ-result-sub {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .econ-result-sub span {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ---- VALUE PROP ---- */
+  .value-section {
+    margin-bottom: 96px;
+  }
+
+  .value-card {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.12);
+    border-radius: 20px;
+    padding: 48px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .value-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: radial-gradient(ellipse at 50% -30%, rgba(254, 202, 87, 0.06), transparent 70%);
+    pointer-events: none;
+  }
+
+  .value-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: var(--gold);
+    position: relative;
+  }
+
+  .value-text {
+    font-size: 16px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 540px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .value-text em {
+    color: var(--text);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* ---- NICHES ---- */
+  .niches-section {
+    margin-bottom: 96px;
+  }
+
+  .niches-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .niches-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .niche-chip {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    cursor: default;
+  }
+
+  .niche-chip:hover {
+    border-color: rgba(254, 202, 87, 0.3);
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
+
+  .niche-chip span {
+    margin-right: 6px;
+  }
+
+  /* ---- CTA ---- */
+  .cta-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .cta-card {
+    background: var(--surface);
+    border: 1px solid rgba(254, 202, 87, 0.15);
+    border-radius: 20px;
+    padding: 56px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(254, 202, 87, 0.04), transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .cta-desc {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 40px;
+    background: var(--gold);
+    color: #050508;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 14px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(254, 202, 87, 0.25);
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.8s forwards;
+  }
+
+  .footer-brand {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-link {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover { color: var(--text-dim); }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .agents-grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .agents-connector {
+      flex-direction: row;
+      padding: 16px 0;
+      min-width: unset;
+    }
+
+    .connector-line {
+      height: 2px;
+      width: auto;
+      flex: 1;
+    }
+
+    .connector-line::before {
+      background: linear-gradient(90deg, rgba(254, 202, 87, 0.4), rgba(108, 92, 231, 0.3), rgba(85, 239, 196, 0.4));
+      background-size: 200% 100%;
+    }
+
+    .connector-label {
+      writing-mode: horizontal-tb;
+      transform: none;
+      margin: 0 12px;
+    }
+
+    .econ-step--2,
+    .econ-step--3,
+    .econ-step--4 {
+      max-width: 100%;
+    }
+
+    .funnel-steps {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-card {
+      padding: 40px 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="/main" class="nav-logo" style="text-decoration:none">
+      <span class="nav-logo-text">TEAM<span style="color:var(--gold)">ON</span></span>
+    </a>
+    <span class="nav-badge">LeadSell</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">AI-агент автономных продаж</p>
+    <h1 class="hero-title">Lead<span class="gold">Sell</span></h1>
+    <p class="hero-sub">Два AI-агента, которые находят бизнесы, создают для них персональные демо-боты и ведут до продажи. Полностью автономно.</p>
+    <p class="hero-tagline">Пока вы спите — он продаёт</p>
+  </section>
+
+  <!-- TWO AGENTS -->
+  <section class="agents-section fadeUp">
+    <div class="agents-header">
+      <p class="section-label">Архитектура</p>
+      <h2 class="section-title">Два агента. Одна цель.</h2>
+      <p class="section-desc" style="margin: 0 auto;">Охотник находит и впечатляет. Фермер ведёт и конвертит. Оба работают автономно, общаясь через внутреннюю CRM.</p>
+    </div>
+
+    <div class="agents-grid">
+      <!-- LEAD AGENT -->
+      <div class="agent-card agent-card--lead fadeUp">
+        <div class="agent-icon agent-icon--lead">&#9789;</div>
+        <p class="agent-role agent-role--lead">Охотник &middot; Ночной</p>
+        <h3 class="agent-name agent-name--lead">Lead Agent</h3>
+        <p class="agent-persona">Не знает про продажи. Его работа — найти, впечатлить, передать.</p>
+        <p class="agent-when">&#9790; Работает ночью, цикл раз в сутки</p>
+        <ul class="agent-skills">
+          <li class="agent-skill"><code>prospect</code> Парсинг ниши, поиск бизнесов</li>
+          <li class="agent-skill"><code>analyze</code> Глубокий анализ сайта и отзывов</li>
+          <li class="agent-skill"><code>build-demo</code> Создание персонального демо-бота</li>
+          <li class="agent-skill"><code>outreach</code> Персональное предложение владельцу</li>
+        </ul>
+      </div>
+
+      <!-- CONNECTOR -->
+      <div class="agents-connector fadeUp">
+        <div class="connector-line"></div>
+        <span class="connector-label">передача лида</span>
+        <div class="connector-hub">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="#a29bfe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="connector-label">handoff</span>
+        <div class="connector-line"></div>
+      </div>
+
+      <!-- SELL AGENT -->
+      <div class="agent-card agent-card--sell fadeUp">
+        <div class="agent-icon agent-icon--sell">&#9788;</div>
+        <p class="agent-role agent-role--sell">Фермер &middot; Дневной</p>
+        <h3 class="agent-name agent-name--sell">Sell Agent</h3>
+        <p class="agent-persona">Не знает про парсинг. Его работа — вести, греть, конвертить.</p>
+        <p class="agent-when">&#9788; Работает днём, loop каждые 4 часа</p>
+        <ul class="agent-skills">
+          <li class="agent-skill"><code>nurture</code> Мониторинг демо, умный догрев</li>
+          <li class="agent-skill"><code>convert</code> Скоринг лидов, подготовка к сделке</li>
+          <li class="agent-skill"><code>report</code> Утренний отчёт, HOT alert</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUNNEL -->
+  <section class="funnel-section fadeUp">
+    <div class="funnel-header">
+      <p class="section-label">Воронка</p>
+      <h2 class="section-title">Как это работает</h2>
+      <p class="section-desc" style="margin: 0 auto;">Полный цикл от парсинга до горячего лида — автономно, каждый день.</p>
+    </div>
+
+    <div class="funnel-stages">
+      <!-- NIGHT -->
+      <div class="funnel-stage funnel-stage--night fadeUp">
+        <div class="funnel-stage-header">
+          <span class="funnel-stage-icon">&#9789;</span>
+          <h3 class="funnel-stage-title">Ночь &middot; Lead Agent</h3>
+        </div>
+        <div class="funnel-steps">
+          <div class="funnel-step">
+            <span class="funnel-step-num">1</span>
+            Парсинг ниши — поиск бизнесов
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">2</span>
+            Анализ сайтов и отзывов
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">3</span>
+            Создание персонального демо-бота
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">4</span>
+            Отправка предложения владельцу
+          </div>
+        </div>
+      </div>
+
+      <div class="funnel-connector"><span class="funnel-connector-arrow">&#8595;</span></div>
+
+      <!-- DAY -->
+      <div class="funnel-stage funnel-stage--day fadeUp">
+        <div class="funnel-stage-header">
+          <span class="funnel-stage-icon">&#9788;</span>
+          <h3 class="funnel-stage-title">День &middot; Sell Agent</h3>
+        </div>
+        <div class="funnel-steps">
+          <div class="funnel-step">
+            <span class="funnel-step-num">1</span>
+            Мониторинг активности демо-ботов
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">2</span>
+            Скоринг лидов по взаимодействиям
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">3</span>
+            Умный догрев — кейсы, контент
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">4</span>
+            HOT alert — лид готов к сделке
+          </div>
+        </div>
+      </div>
+
+      <div class="funnel-connector"><span class="funnel-connector-arrow">&#8595;</span></div>
+
+      <!-- CLOSE -->
+      <div class="funnel-stage funnel-stage--close fadeUp">
+        <div class="funnel-stage-header">
+          <span class="funnel-stage-icon">&#128293;</span>
+          <h3 class="funnel-stage-title">Close &middot; Ты подключаешься только тут</h3>
+        </div>
+        <div class="funnel-steps">
+          <div class="funnel-step">
+            <span class="funnel-step-num">&#10003;</span>
+            Досье лида + история взаимодействий
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">&#10003;</span>
+            Персональный оффер + скрипт звонка
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-num">&#10003;</span>
+            Договор и оплата
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNIT ECONOMICS -->
+  <section class="economics-section fadeUp">
+    <div class="economics-header">
+      <p class="section-label">Юнит-экономика</p>
+      <h2 class="section-title">Воронка за неделю</h2>
+      <p class="section-desc" style="margin: 0 auto;">Конверсия 30% на каждом этапе — потому что демо с реальными данными бизнеса, а не спам.</p>
+    </div>
+
+    <div class="economics-funnel">
+      <div class="econ-step econ-step--1 fadeUp">
+        <span class="econ-step-label">Демо отправлено</span>
+        <span class="econ-step-value">35</span>
+      </div>
+      <div class="econ-arrow">&#8595;</div>
+      <div class="econ-step econ-step--2 fadeUp">
+        <span class="econ-step-label">Попробовали демо</span>
+        <span class="econ-step-value">10</span>
+      </div>
+      <div class="econ-arrow">&#8595;</div>
+      <div class="econ-step econ-step--3 fadeUp">
+        <span class="econ-step-label">Горячих лидов</span>
+        <span class="econ-step-value">2</span>
+      </div>
+      <div class="econ-arrow">&#8595;</div>
+      <div class="econ-step econ-step--4 fadeUp">
+        <span class="econ-step-label">Клиент</span>
+        <span class="econ-step-value">1</span>
+      </div>
+    </div>
+
+    <div class="econ-result fadeUp">
+      <p class="econ-result-title">~300K / мес</p>
+      <p class="econ-result-sub">4 клиента &times; <span>75K средний чек</span></p>
+      <p class="econ-result-sub" style="margin-top: 4px;">Через 6 месяцев: <span>~700K/мес</span> с абоненткой</p>
+    </div>
+  </section>
+
+  <!-- VALUE PROP -->
+  <section class="value-section fadeUp">
+    <div class="value-card">
+      <h2 class="value-title">Не спам, а реальная ценность</h2>
+      <p class="value-text">
+        Мы не рассылаем шаблонные письма. Агент создаёт <em>рабочего бота с данными конкретного бизнеса</em> — и дарит его как демо. Лид пробует, видит свои услуги, своих врачей, свои цены. Это не &laquo;купите кота в мешке&raquo;, а <em>&laquo;вот ваш кот, он уже мурчит&raquo;</em>.
+      </p>
+    </div>
+  </section>
+
+  <!-- NICHES -->
+  <section class="niches-section fadeUp">
+    <div class="niches-header">
+      <p class="section-label">Ниши для старта</p>
+      <h2 class="section-title">Где работает LeadSell</h2>
+    </div>
+    <div class="niches-grid">
+      <div class="niche-chip"><span>&#129463;</span> Стоматологии</div>
+      <div class="niche-chip"><span>&#128663;</span> Автосервисы</div>
+      <div class="niche-chip"><span>&#9878;</span> Юридические фирмы</div>
+      <div class="niche-chip"><span>&#128135;</span> Салоны красоты</div>
+      <div class="niche-chip"><span>&#127973;</span> Медицинские центры</div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section fadeUp">
+    <div class="cta-card">
+      <h2 class="cta-title">Запустите AI-отдел продаж</h2>
+      <p class="cta-desc">LeadSell работает, пока вы спите. Находит клиентов, впечатляет их, ведёт до сделки.</p>
+      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="cta-btn">
+        Подключить LeadSell &#8594;
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span class="footer-brand">ООО &laquo;Тимон ИИ&raquo; &middot; TeamON</span>
+    <nav class="footer-links">
+      <a href="/" class="footer-link">team-on.ru</a>
+      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="footer-link">teamonai@yandex.ru</a>
+    </nav>
+  </footer>
+
+</div>
+
+<script>
+  // Staggered fadeUp on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const delay = entry.target.dataset.delay || 0;
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, delay);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fadeUp').forEach((el, i) => {
+    el.dataset.delay = (i % 6) * 80;
+    observer.observe(el);
+  });
+</script>
+
+<div id="contactModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#0c0c12;border:1px solid #252530;border-radius:20px;padding:36px;max-width:380px;width:90%;position:relative;">
+    <button onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
+    <h3 style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">Свяжитесь с нами</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="mailto:teamonai@yandex.ru" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">📧 teamonai@yandex.ru</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Партнёрская программа — TeamON AI</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0c0c12;
+    --surface-2: #121218;
+    --surface-3: #1a1a22;
+    --border: #252530;
+    --text: #f0eff5;
+    --text-dim: #9594a8;
+    --text-muted: #5e5d70;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-dim: rgba(108, 92, 231, 0.08);
+    --accent-glow: rgba(108, 92, 231, 0.2);
+    --hot: #fd7272;
+    --hot-dim: rgba(253, 114, 114, 0.08);
+    --hot-glow: rgba(253, 114, 114, 0.15);
+    --gold: #feca57;
+    --gold-dim: rgba(254, 202, 87, 0.06);
+    --green: #55efc4;
+    --green-dim: rgba(85, 239, 196, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  /* Radial gradient backgrounds */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 900px 700px at 30% 0%, rgba(108, 92, 231, 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 600px 900px at 70% 100%, rgba(253, 114, 114, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Noise texture overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    background: rgba(5, 5, 8, 0.8);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .logo .on { color: var(--accent-light); }
+
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .btn-nav {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+  }
+
+  .btn-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--accent-glow);
+  }
+
+  /* ---- PAGE CONTAINER ---- */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    text-align: center;
+    padding: 140px 0 80px;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid rgba(108, 92, 231, 0.2);
+    padding: 8px 20px;
+    border-radius: 50px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    letter-spacing: -1px;
+    position: relative;
+  }
+
+  .hero h1 .em {
+    background: linear-gradient(135deg, var(--accent-light), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 20px;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ---- PARTNER PATH (TIMELINE) ---- */
+  .path-section {
+    padding: 80px 0;
+  }
+
+  .section-head {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+
+  .section-sub {
+    color: var(--text-dim);
+    font-size: 16px;
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 56px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Timeline horizontal */
+  .timeline {
+    position: relative;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 20px 0 40px;
+    scrollbar-width: none;
+  }
+
+  .timeline::-webkit-scrollbar { display: none; }
+
+  /* The connecting line */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 72px;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background: linear-gradient(90deg,
+      var(--accent) 0%,
+      var(--accent-light) 25%,
+      var(--green) 50%,
+      var(--gold) 75%,
+      var(--hot) 100%
+    );
+    z-index: 0;
+    border-radius: 2px;
+  }
+
+  .timeline-step {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 8px;
+  }
+
+  /* Level number circle */
+  .step-dot {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .timeline-step:hover .step-dot {
+    transform: scale(1.15);
+  }
+
+  .step-dot::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+  }
+
+  .timeline-step:hover .step-dot::before {
+    border-color: inherit;
+  }
+
+  /* Step colors */
+  .step-1 .step-dot { background: var(--accent); color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
+  .step-1 .step-dot::before { border-color: rgba(108, 92, 231, 0.3); }
+  .step-2 .step-dot { background: var(--accent-light); color: var(--bg); box-shadow: 0 0 20px rgba(162, 155, 254, 0.3); }
+  .step-2 .step-dot::before { border-color: rgba(162, 155, 254, 0.3); }
+  .step-3 .step-dot { background: var(--green); color: var(--bg); box-shadow: 0 0 20px rgba(85, 239, 196, 0.3); }
+  .step-3 .step-dot::before { border-color: rgba(85, 239, 196, 0.3); }
+  .step-4 .step-dot { background: var(--gold); color: var(--bg); box-shadow: 0 0 20px rgba(254, 202, 87, 0.3); }
+  .step-4 .step-dot::before { border-color: rgba(254, 202, 87, 0.3); }
+  .step-5 .step-dot { background: var(--hot); color: #fff; box-shadow: 0 0 20px var(--hot-glow); }
+  .step-5 .step-dot::before { border-color: rgba(253, 114, 114, 0.3); }
+
+  .step-commission {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .step-1 .step-commission { color: var(--accent-light); }
+  .step-2 .step-commission { color: var(--accent-light); }
+  .step-3 .step-commission { color: var(--green); }
+  .step-4 .step-commission { color: var(--gold); }
+  .step-5 .step-commission { color: var(--hot); }
+
+  .step-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .step-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* Step detail card */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: left;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .timeline-step:hover .step-card {
+    transform: translateY(-4px);
+  }
+
+  .step-1:hover .step-card { border-color: var(--accent); }
+  .step-2:hover .step-card { border-color: var(--accent-light); }
+  .step-3:hover .step-card { border-color: var(--green); }
+  .step-4:hover .step-card { border-color: var(--gold); }
+  .step-5:hover .step-card { border-color: var(--hot); }
+
+  .step-card-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(37, 37, 48, 0.5);
+    font-size: 13px;
+  }
+
+  .step-card-row:last-child { border-bottom: none; }
+
+  .step-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 70px;
+  }
+
+  .step-card-value {
+    color: var(--text-dim);
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  /* ---- SURFACE TABLE ---- */
+  .surface-section {
+    padding: 80px 0;
+  }
+
+  .surface-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .surface-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .surface-col::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .surface-col.open::before {
+    background: linear-gradient(90deg, var(--green), var(--accent-light));
+  }
+
+  .surface-col.closed::before {
+    background: linear-gradient(90deg, var(--hot), var(--gold));
+  }
+
+  .surface-col h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .surface-col.open h3 { color: var(--green); }
+  .surface-col.closed h3 { color: var(--hot); }
+
+  .surface-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(37, 37, 48, 0.5);
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .surface-item:last-child { border-bottom: none; }
+
+  .surface-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ---- EXCLUSIVE SECTION ---- */
+  .exclusive-section {
+    padding: 80px 0;
+  }
+
+  .exclusive-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .excl-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .excl-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .excl-card h3 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .excl-card p {
+    color: var(--text-dim);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .excl-card .highlight {
+    color: var(--accent-light);
+    font-weight: 500;
+  }
+
+  /* ---- WHITE LABEL SECTION ---- */
+  .wl-section {
+    padding: 80px 0;
+  }
+
+  .wl-box {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wl-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, var(--accent-dim) 0%, transparent 40%);
+    pointer-events: none;
+    border-radius: 20px;
+  }
+
+  .wl-box .section-head {
+    text-align: left;
+    font-size: 24px;
+    position: relative;
+  }
+
+  .wl-box .section-sub {
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 36px;
+    position: relative;
+  }
+
+  .wl-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    position: relative;
+  }
+
+  .wl-col h4 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wl-col.gets h4 { color: var(--green); }
+  .wl-col.nope h4 { color: var(--hot); }
+
+  .wl-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  .wl-item .icon { flex-shrink: 0; font-size: 14px; }
+
+  .wl-scheme {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+
+  .wl-scheme-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .wl-scheme-flow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .wl-scheme-node {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .wl-scheme-node.you {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .wl-scheme-arrow {
+    color: var(--text-muted);
+    font-size: 20px;
+  }
+
+  /* ---- PROTECTION SECTION ---- */
+  .protect-section {
+    padding: 80px 0;
+  }
+
+  .protect-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .protect-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .protect-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+  }
+
+  .protect-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .protect-card h4 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .protect-card p {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ---- CTA SECTION ---- */
+  .cta-section {
+    padding: 80px 0 100px;
+    text-align: center;
+  }
+
+  .cta-box {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+    opacity: 0.3;
+  }
+
+  .cta-box .section-head {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .cta-box p {
+    color: var(--text-dim);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .btn-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 18px 48px;
+    border-radius: 50px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .btn-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px var(--accent-glow);
+  }
+
+  .cta-note {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    position: relative;
+  }
+
+  /* ---- ANALOGIES ---- */
+  .analogies-section {
+    padding: 0 0 80px;
+  }
+
+  .analogies-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .analogy-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.3s;
+  }
+
+  .analogy-chip:hover { border-color: var(--accent); }
+
+  .analogy-chip .name {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  footer a {
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  footer a:hover { color: var(--text); }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: all 0.6s ease-out;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-badge { animation: fadeUp 0.6s ease-out 0.1s both; }
+  .hero h1 { animation: fadeUp 0.6s ease-out 0.2s both; }
+  .hero-sub { animation: fadeUp 0.6s ease-out 0.3s both; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 1024px) {
+    .timeline {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 20px;
+    }
+    .timeline-step {
+      scroll-snap-align: center;
+      min-width: 220px;
+    }
+    .protect-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .nav-links a:not(.btn-nav) { display: none; }
+    .page { padding: 0 16px; }
+    .hero { padding: 120px 0 60px; }
+    .hero h1 { font-size: 28px; }
+
+    .timeline {
+      flex-direction: column;
+      gap: 0;
+      padding: 0;
+    }
+    .timeline::before {
+      top: 22px;
+      bottom: 22px;
+      left: 22px;
+      right: auto;
+      width: 2px;
+      height: auto;
+    }
+    .timeline-step {
+      min-width: auto;
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      grid-template-rows: auto auto;
+      gap: 0 16px;
+      text-align: left;
+      padding: 0 0 24px 0;
+    }
+    .step-dot { margin: 0; grid-row: 1 / 3; align-self: start; }
+    .step-commission { font-size: 22px; }
+    .step-card { margin-top: 12px; grid-column: 2; }
+    .step-title, .step-type, .step-time { grid-column: 2; }
+
+    .surface-grid,
+    .exclusive-grid,
+    .wl-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .protect-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .wl-box { padding: 28px 20px; }
+    .wl-scheme-flow { flex-direction: column; }
+    .wl-scheme-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <a href="/main" class="logo">TEAM<span class="on">ON</span></a>
+  <div class="nav-links">
+    <a href="/main">AI-сотрудники</a>
+    <a href="/partners" style="color: var(--text);">Партнёрам</a>
+    <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="btn-nav">Связаться</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Партнёрская программа</div>
+    <h1>Продавайте <span class="em">AI под своим брендом</span></h1>
+    <p class="hero-sub">Пять уровней партнёрства. От простой рекомендации до собственной AI-компании на базе TeamON.</p>
+  </section>
+
+  <!-- PARTNER PATH TIMELINE -->
+  <section class="path-section fade-up">
+    <h2 class="section-head">Путь партнёра</h2>
+    <p class="section-sub">Каждый уровень открывает новые возможности и доход</p>
+
+    <div class="timeline">
+
+      <!-- Level 1 -->
+      <div class="timeline-step step-1">
+        <div class="step-dot">1</div>
+        <div class="step-commission">10%</div>
+        <div class="step-type">разово</div>
+        <div class="step-title">Амбассадор</div>
+        <div class="step-time">Старт</div>
+        <div class="step-card">
+          <div class="step-card-row">
+            <span class="step-card-label">Что</span>
+            <span class="step-card-value">Привёл клиента — получил комиссию</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Доступ</span>
+            <span class="step-card-value">Персональная ссылка</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Вход</span>
+            <span class="step-card-value">Свободный, без обязательств</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 2 -->
+      <div class="timeline-step step-2">
+        <div class="step-dot">2</div>
+        <div class="step-commission">20%</div>
+        <div class="step-type">постоянно</div>
+        <div class="step-title">Представитель</div>
+        <div class="step-time">1-3 мес</div>
+        <div class="step-card">
+          <div class="step-card-row">
+            <span class="step-card-label">Что</span>
+            <span class="step-card-value">Продаёт регулярно, ведёт переговоры</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Доступ</span>
+            <span class="step-card-value">Демо-материалы, презентации</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Вход</span>
+            <span class="step-card-value">Заявка + мин. 1 сделка в квартал</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 3 -->
+      <div class="timeline-step step-3">
+        <div class="step-dot">3</div>
+        <div class="step-commission">30%</div>
+        <div class="step-type">маржа</div>
+        <div class="step-title">Интегратор</div>
+        <div class="step-time">3-6 мес</div>
+        <div class="step-card">
+          <div class="step-card-row">
+            <span class="step-card-label">Что</span>
+            <span class="step-card-value">Продаёт все продукты, базовая поддержка</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Доступ</span>
+            <span class="step-card-value">Control UI, обучение</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Вход</span>
+            <span class="step-card-value">3+ мес опыта, 3 сделки/квартал</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 4 -->
+      <div class="timeline-step step-4">
+        <div class="step-dot">4</div>
+        <div class="step-commission">40%</div>
+        <div class="step-type">доход</div>
+        <div class="step-title">Партнёр</div>
+        <div class="step-time">6-12 мес</div>
+        <div class="step-card">
+          <div class="step-card-row">
+            <span class="step-card-label">Что</span>
+            <span class="step-card-value">Продаёт + внедряет + сопровождает</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Доступ</span>
+            <span class="step-card-value">Техподдержка, эксклюзив на нишу</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Вход</span>
+            <span class="step-card-value">6+ мес, своя команда внедрения</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level 5 -->
+      <div class="timeline-step step-5">
+        <div class="step-dot">5</div>
+        <div class="step-commission">50%</div>
+        <div class="step-type">своя цена</div>
+        <div class="step-title">Свой бренд</div>
+        <div class="step-time">12+ мес</div>
+        <div class="step-card">
+          <div class="step-card-row">
+            <span class="step-card-label">Что</span>
+            <span class="step-card-value">Всё под своим брендом. Своя AI-компания</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Доступ</span>
+            <span class="step-card-value">White label UI, API, свой логотип</span>
+          </div>
+          <div class="step-card-row">
+            <span class="step-card-label">Вход</span>
+            <span class="step-card-value">12+ мес, стабильные продажи</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SURFACE: WHAT PARTNER GETS -->
+  <section class="surface-section fade-up">
+    <h2 class="section-head">Поверхность продукта</h2>
+    <p class="section-sub">Партнёр настраивает AI-агентов через интерфейс — без единой строчки кода</p>
+
+    <div class="surface-grid">
+      <div class="surface-col open">
+        <h3><span>Доступно партнёру</span></h3>
+        <div class="surface-item"><span class="surface-icon">+</span> Веб-интерфейс (Control UI)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Настройка агентов (имя, роль, промпт)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Подключение каналов (TG, WA, Slack)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Скиллы (вкл/выкл, API-ключи)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> База знаний (загрузка документов)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Автоматизация (cron-задачи)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Вебхуки (интеграция с CRM/ERP)</div>
+        <div class="surface-item"><span class="surface-icon">+</span> Мониторинг (логи, статусы)</div>
+      </div>
+
+      <div class="surface-col closed">
+        <h3><span>Закрыто</span></h3>
+        <div class="surface-item"><span class="surface-icon">-</span> Исходный код</div>
+        <div class="surface-item"><span class="surface-icon">-</span> Архитектура, pi-agent-core</div>
+        <div class="surface-item"><span class="surface-icon">-</span> Сервер (нет SSH)</div>
+        <div class="surface-item"><span class="surface-icon">-</span> База данных напрямую</div>
+        <div class="surface-item"><span class="surface-icon">-</span> LLM-провайдеры (fallback логика)</div>
+        <div class="surface-item"><span class="surface-icon">-</span> Медиа-пайплайн</div>
+        <div class="surface-item"><span class="surface-icon">-</span> Sandbox / Docker</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXCLUSIVE NICHE -->
+  <section class="exclusive-section fade-up">
+    <h2 class="section-head">Эксклюзив на нишу</h2>
+    <p class="section-sub">Защитите свою территорию. Мы не конкурируем с партнёрами</p>
+
+    <div class="exclusive-grid">
+      <div class="excl-card">
+        <h3>Как получить</h3>
+        <p>Уровень <span class="highlight">реселлер и выше</span>. Продаёте все продукты TeamON и выполняете минимум продаж в квартал. Эксклюзив на 12 месяцев с автопродлением.</p>
+      </div>
+      <div class="excl-card">
+        <h3>Защита от прямых продаж</h3>
+        <p>Если клиент из вашей ниши приходит к нам напрямую — <span class="highlight">вы всё равно получаете комиссию</span>. Мы не забираем клиентов партнёров.</p>
+      </div>
+      <div class="excl-card">
+        <h3>Два партнёра в одном городе</h3>
+        <p>Разные ниши. <span class="highlight">Пересечение запрещено</span>. Партнёр А — транспорт, Партнёр Б — HR. Конфликтов нет.</p>
+      </div>
+      <div class="excl-card">
+        <h3>Если план не выполнен</h3>
+        <p>Не выполнили 1 квартал — предупреждение. Не выполнили <span class="highlight">2 квартала подряд</span> — эксклюзив снимается. Выполнили — автопродление.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHITE LABEL -->
+  <section class="wl-section fade-up">
+    <h2 class="section-head">White Label</h2>
+    <p class="section-sub">Своя AI-компания — без разработки</p>
+
+    <div class="wl-box">
+      <h3 class="section-head" style="font-size: 22px;">Клиенты видят ваш бренд.<br>Под капотом — TeamON.</h3>
+      <p class="section-sub" style="max-width: 100%;">
+        Своё ООО, свой логотип в интерфейсе, свои договоры с клиентами, свои цены. Полная автономия в продажах и внедрении.
+      </p>
+
+      <div class="wl-columns">
+        <div class="wl-col gets">
+          <h4>Что получаете</h4>
+          <div class="wl-item"><span class="icon">+</span> Своя AI-компания (ООО, бренд, сайт)</div>
+          <div class="wl-item"><span class="icon">+</span> Свой логотип в интерфейсе</div>
+          <div class="wl-item"><span class="icon">+</span> Свои договоры с клиентами</div>
+          <div class="wl-item"><span class="icon">+</span> Свои цены (маржа 40-60%)</div>
+          <div class="wl-item"><span class="icon">+</span> Полная автономия</div>
+        </div>
+        <div class="wl-col nope">
+          <h4>Что закрыто</h4>
+          <div class="wl-item"><span class="icon">-</span> Исходный код</div>
+          <div class="wl-item"><span class="icon">-</span> Доступ к серверу</div>
+          <div class="wl-item"><span class="icon">-</span> Доля в Тимон ИИ</div>
+          <div class="wl-item"><span class="icon">-</span> Право форкнуть продукт</div>
+        </div>
+      </div>
+
+      <div class="wl-scheme">
+        <div class="wl-scheme-label">Схема взаимодействия</div>
+        <div class="wl-scheme-flow">
+          <div class="wl-scheme-node">Ваш клиент</div>
+          <div class="wl-scheme-arrow">&rarr;</div>
+          <div class="wl-scheme-node you">Ваша компания<br><span style="font-size: 11px; color: var(--text-muted);">свой бренд, договор</span></div>
+          <div class="wl-scheme-arrow">&rarr;</div>
+          <div class="wl-scheme-node">TeamON Core<br><span style="font-size: 11px; color: var(--text-muted);">сублицензия</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTECTION -->
+  <section class="protect-section fade-up">
+    <h2 class="section-head">Защита от копирования</h2>
+    <p class="section-sub">Четыре уровня защиты интеллектуальной собственности</p>
+
+    <div class="protect-grid">
+      <div class="protect-card">
+        <span class="protect-icon" style="color: var(--accent-light);">&#x2693;</span>
+        <h4>Технический</h4>
+        <p>SaaS — код на нашем сервере. Партнёр видит только UI и API</p>
+      </div>
+      <div class="protect-card">
+        <span class="protect-icon" style="color: var(--gold);">&#x2696;</span>
+        <h4>Юридический</h4>
+        <p>Non-compete: партнёр не создаёт конкурирующий AI-продукт 12-24 мес</p>
+      </div>
+      <div class="protect-card">
+        <span class="protect-icon" style="color: var(--green);">&#x27F3;</span>
+        <h4>Бизнес</h4>
+        <p>Продукт развивается. Скопировать сегодняшнюю версию бесполезно</p>
+      </div>
+      <div class="protect-card">
+        <span class="protect-icon" style="color: var(--hot);">&#x1F512;</span>
+        <h4>Контрактный</h4>
+        <p>Лицензия отзывается при расторжении — продукт перестаёт работать</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALOGIES -->
+  <section class="analogies-section fade-up">
+    <h2 class="section-head">Проверенная модель</h2>
+    <p class="section-sub">Так работают крупнейшие IT-компании мира</p>
+
+    <div class="analogies-row">
+      <div class="analogy-chip"><span class="name">1C</span> + сотни франчайзи</div>
+      <div class="analogy-chip"><span class="name">Salesforce</span> + тысячи интеграторов</div>
+      <div class="analogy-chip"><span class="name">Apple</span> + операторы и ритейл</div>
+      <div class="analogy-chip"><span class="name">MVNO</span> (Yota, Тинькофф Мобайл)</div>
+      <div class="analogy-chip"><span class="name">TeamON AI</span> + вы</div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section fade-up">
+    <div class="cta-box">
+      <h2 class="section-head">Стать партнёром</h2>
+      <p>Продукт уже есть. Клиенты уже есть. Осталось масштабировать. Напишите нам — обсудим формат, нишу и условия.</p>
+      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="btn-cta">Написать нам</a>
+      <div class="cta-note">teamonai@yandex.ru</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2026 TeamOn AI — включи AI-команду</p>
+  <p style="margin-top: 8px;">
+    <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;">teamonai@yandex.ru</a> &middot; Москва
+  </p>
+</footer>
+
+<script>
+  // Scroll-triggered fadeUp animations with stagger
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.08}s`;
+    observer.observe(el);
+  });
+</script>
+
+<!-- Contact Modal -->
+<div id="contactModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#0c0c12;border:1px solid #252530;border-radius:20px;padding:36px;max-width:380px;width:90%;position:relative;">
+    <button onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
+    <h3 style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">Свяжитесь с нами</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="mailto:teamonai@yandex.ru" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(108,92,231,0.4)'" onmouseout="this.style.borderColor='rgba(108,92,231,0.15)'">
+        <span style="font-size:18px;">📧</span> teamonai@yandex.ru
+      </a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

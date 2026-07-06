@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeamON Copilot — AI-ассистент для сотрудников</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0c0c12;
+    --surface-2: #121218;
+    --surface-3: #1a1a22;
+    --border: #252530;
+    --text: #f0eff5;
+    --text-dim: #9594a8;
+    --text-muted: #5e5d70;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-dim: rgba(108, 92, 231, 0.08);
+    --accent-glow: rgba(108, 92, 231, 0.2);
+    --hot: #fd7272;
+    --hot-dim: rgba(253, 114, 114, 0.08);
+    --gold: #feca57;
+    --gold-dim: rgba(254, 202, 87, 0.06);
+    --gold-glow: rgba(254, 202, 87, 0.2);
+    --green: #55efc4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 900px 700px at 30% 0%, rgba(254, 202, 87, 0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 600px 900px at 70% 100%, rgba(108, 92, 231, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px 100px;
+  }
+
+  /* ---- NAV ---- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    max-width: 900px;
+    margin: 0 auto;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .nav-logo-text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ---- HERO ---- */
+  .hero {
+    text-align: center;
+    padding: 80px 0 64px;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 500px;
+    background: radial-gradient(circle, var(--gold-glow) 0%, transparent 65%);
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(254, 202, 87, 0.2);
+    background: rgba(254, 202, 87, 0.05);
+    padding: 8px 20px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    position: relative;
+    animation: fadeUp 0.6s ease-out;
+  }
+
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 28px;
+    letter-spacing: -1px;
+    position: relative;
+    animation: fadeUp 0.6s ease-out 0.1s both;
+  }
+
+  .hero h1 .em {
+    background: linear-gradient(135deg, var(--gold), #ffdd85);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 20px;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto;
+    position: relative;
+    animation: fadeUp 0.6s ease-out 0.2s both;
+  }
+
+  /* ---- PRODUCTS GRID ---- */
+  .products {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 64px 0;
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+
+  .product-card:hover {
+    border-color: rgba(254, 202, 87, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(254, 202, 87, 0.06);
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-card:hover::before { opacity: 0.6; }
+
+  .product-icon {
+    font-size: 36px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .product-card h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .product-card .product-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .product-card ul {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+
+  .product-card ul li {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-weight: 400;
+    line-height: 1.6;
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .product-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 13px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .product-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green);
+    padding: 12px 16px;
+    background: rgba(85, 239, 196, 0.05);
+    border: 1px solid rgba(85, 239, 196, 0.12);
+    border-radius: 12px;
+  }
+
+  .product-price.tbd {
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+
+  /* ---- HOW IT WORKS ---- */
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .section-title .em {
+    background: linear-gradient(135deg, var(--gold), #ffdd85);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .how-section {
+    margin: 80px 0;
+  }
+
+  .how-block {
+    margin-bottom: 48px;
+  }
+
+  .how-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .how-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .how-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dim);
+    text-align: center;
+    flex: 1;
+    min-width: 140px;
+    transition: border-color 0.3s;
+  }
+
+  .how-step:hover {
+    border-color: rgba(254, 202, 87, 0.3);
+  }
+
+  .how-arrow {
+    color: var(--gold);
+    font-size: 20px;
+    padding: 0 8px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  /* ---- VALUE PROPOSITION ---- */
+  .value-section {
+    text-align: center;
+    padding: 64px 0;
+    margin: 40px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .value-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 300px;
+    background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0.2;
+  }
+
+  .value-text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+    position: relative;
+  }
+
+  .value-text .em {
+    background: linear-gradient(135deg, var(--gold), #ffdd85);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ---- CTA ---- */
+  .cta-section {
+    text-align: center;
+    padding: 64px 0 32px;
+  }
+
+  .cta-section p {
+    font-size: 18px;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .cta-button {
+    display: inline-block;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--bg);
+    background: linear-gradient(135deg, var(--gold), #ffdd85);
+    padding: 18px 48px;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(254, 202, 87, 0.25);
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    text-align: center;
+    padding: 48px 0 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .footer-company {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .footer-email a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-email a:hover { color: var(--gold); }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 32px; }
+    .hero-sub { font-size: 17px; }
+    .products { grid-template-columns: 1fr; }
+    .how-steps { flex-direction: column; gap: 12px; }
+    .how-arrow { transform: rotate(90deg); padding: 4px 0; }
+    .value-text { font-size: 20px; }
+    .section-title { font-size: 22px; }
+    .nav { padding: 16px 20px; }
+    .page { padding: 0 20px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <a href="/main" class="nav-logo" style="text-decoration:none"><span class="nav-logo-text">TEAM<span style="color:var(--accent-light)">ON</span></span></a>
+  <div class="nav-links">
+    <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;">Связаться</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">AI-ассистент для сотрудников</div>
+    <h1>Team<span class="em">ON</span> Copilot</h1>
+    <p class="hero-sub">Подсказки в реальном времени на звонках.<br>AI-секретарь на встречах.</p>
+  </section>
+
+  <!-- TWO PRODUCT CARDS -->
+  <div class="products">
+
+    <div class="product-card animate-on-scroll">
+      <span class="product-icon">&#x1F4A1;</span>
+      <h2>Hints</h2>
+      <div class="product-subtitle">Подсказки на звонках</div>
+      <ul>
+        <li>Десктопное приложение (Mac / Windows)</li>
+        <li>AI слушает разговор оператора с клиентом в реальном времени</li>
+        <li>Показывает подсказки на экране: ответы, скрипты, допродажи</li>
+        <li>Новый оператор работает как опытный с первого дня</li>
+        <li>Обучение сокращается с 2 недель до 3 дней</li>
+      </ul>
+      <div class="product-price">Пилот 50 000 &#8381; + 10 000 &#8381;/мес за сотрудника</div>
+    </div>
+
+    <div class="product-card animate-on-scroll">
+      <span class="product-icon">&#x1F3A5;</span>
+      <h2>Meet</h2>
+      <div class="product-subtitle">Переговорная комната + AI-секретарь</div>
+      <ul>
+        <li>Полноценное ВКС — онлайн-встречи с аудио и видео</li>
+        <li>Real-time транскрипция прямо во время встречи</li>
+        <li>AI-подсказки участникам в моменте</li>
+        <li>Протоколы встреч → автоматическая рассылка участникам</li>
+      </ul>
+      <div class="product-price">Готов к подключению</div>
+    </div>
+
+  </div>
+
+  <!-- AI SECRETARY — key feature -->
+  <section class="animate-on-scroll" style="margin: 60px auto; max-width: 800px; background: linear-gradient(135deg, rgba(254,202,87,0.06) 0%, rgba(108,92,231,0.04) 100%); border: 1px solid rgba(254,202,87,0.18); border-radius: 20px; padding: 36px 32px; position: relative; overflow: hidden;">
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#feca57,#a29bfe);border-radius:3px;"></div>
+    <div style="font-size:32px;margin-bottom:16px;">🤖</div>
+    <h2 style="font-family:'Unbounded',sans-serif;font-size:22px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em;">AI-секретарь</h2>
+    <p style="font-size:14px;color:#9594a8;line-height:1.7;margin-bottom:20px;">Главное в Meet — не просто ВКС. Это <strong style="color:#f0eff5;">AI-агент, который присутствует на каждой встрече</strong>. Он помнит все предыдущие встречи, знает контекст проектов и участников.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="background:rgba(254,202,87,0.05);border:1px solid rgba(254,202,87,0.1);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#feca57;margin-bottom:6px;">ВО ВРЕМЯ ВСТРЕЧИ</div>
+        <p style="font-size:13px;color:#9594a8;line-height:1.5;">Транскрибирует, подсказывает цифры и факты, фиксирует решения и задачи</p>
+      </div>
+      <div style="background:rgba(108,92,231,0.05);border:1px solid rgba(108,92,231,0.1);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#a29bfe;margin-bottom:6px;">ПОСЛЕ ВСТРЕЧИ</div>
+        <p style="font-size:13px;color:#9594a8;line-height:1.5;">Составляет протокол, рассылает участникам, ставит задачи и напоминания</p>
+      </div>
+      <div style="background:rgba(85,239,196,0.05);border:1px solid rgba(85,239,196,0.1);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#55efc4;margin-bottom:6px;">МЕЖДУ ВСТРЕЧАМИ</div>
+        <p style="font-size:13px;color:#9594a8;line-height:1.5;">Помнит все договорённости, отслеживает выполнение задач, готовит повестку</p>
+      </div>
+      <div style="background:rgba(253,114,114,0.05);border:1px solid rgba(253,114,114,0.1);border-radius:12px;padding:16px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#fd7272;margin-bottom:6px;">СО ВРЕМЕНЕМ</div>
+        <p style="font-size:13px;color:#9594a8;line-height:1.5;">Знает историю всех встреч, видит тренды, напоминает что было решено месяц назад</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section animate-on-scroll">
+    <h2 class="section-title">Как это <span class="em">работает</span></h2>
+
+    <div class="how-block">
+      <div class="how-label">&#x1F4A1; Hints</div>
+      <div class="how-steps">
+        <div class="how-step">Клиент звонит</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">AI слушает</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">Подсказка на экране</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">Оператор отвечает уверенно</div>
+      </div>
+    </div>
+
+    <div class="how-block">
+      <div class="how-label">&#x1F3A5; Meet</div>
+      <div class="how-steps">
+        <div class="how-step">Встреча начинается</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">AI транскрибирует</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">Подсказки в моменте</div>
+        <span class="how-arrow">&#8594;</span>
+        <div class="how-step">Протокол и рассылка</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUE PROPOSITION -->
+  <section class="value-section animate-on-scroll">
+    <div class="value-text">AI не заменяет сотрудника —<br><span class="em">усиливает</span> его</div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section animate-on-scroll">
+    <p>Готовы усилить свою команду?<br>Подключите AI-ассистента за 1 день.</p>
+    <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="cta-button">Подключить Copilot</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-company">&copy; 2025 ООО &laquo;Тимон ИИ&raquo; &middot; TeamON</div>
+    <div class="footer-email"><a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;">teamonai@yandex.ru</a></div>
+  </footer>
+
+</div>
+
+<script>
+  // Scroll-triggered animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+</script>
+
+<div id="contactModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#0c0c12;border:1px solid #252530;border-radius:20px;padding:36px;max-width:380px;width:90%;position:relative;">
+    <button onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
+    <h3 style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">Свяжитесь с нами</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="mailto:teamonai@yandex.ru" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">📧 teamonai@yandex.ru</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

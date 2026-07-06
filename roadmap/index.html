@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeamON AI — Roadmap</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=107062766', 'ym');
+
+    ym(107062766, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/107062766" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<style>
+:root {
+  --bg: #050508;
+  --surface: #0c0c12;
+  --border: #252530;
+  --text: #f0eff5;
+  --text-dim: #9594a8;
+  --text-muted: #5e5d70;
+  --accent: #6c5ce7;
+  --accent-light: #a29bfe;
+  --gold: #feca57;
+  --green: #55efc4;
+  --hot: #fd7272;
+  --cyan: #74b9ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 900px 600px at 50% 0%, rgba(108,92,231,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 800px at 20% 60%, rgba(85,239,196,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+}
+.nav-logo-text {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-badge {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 0 0 48px;
+}
+.hero h1 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* PRODUCT SECTION */
+.product {
+  margin-bottom: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.product.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.product-icon { font-size: 28px; }
+.product-name {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.product-status {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  margin-left: auto;
+}
+.s-prod { background: rgba(85,239,196,0.08); color: var(--green); border: 1px solid rgba(85,239,196,0.12); }
+.s-mvp { background: rgba(254,202,87,0.08); color: var(--gold); border: 1px solid rgba(254,202,87,0.12); }
+.s-dev { background: rgba(108,92,231,0.08); color: var(--accent-light); border: 1px solid rgba(108,92,231,0.12); }
+.s-concept { background: rgba(94,93,112,0.08); color: var(--text-dim); border: 1px solid rgba(94,93,112,0.15); }
+
+.product-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* ROADMAP PHASES */
+.phases {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 20px;
+}
+.phases::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--border) 0%, transparent 100%);
+}
+
+.phase {
+  position: relative;
+  padding: 0 0 16px 16px;
+}
+.phase:last-child { padding-bottom: 0; }
+
+.phase::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+}
+.phase.done::before {
+  background: var(--green);
+  border-color: var(--green);
+}
+.phase.now::before {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(254,202,87,0.3);
+}
+
+.phase-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.phase.done .phase-title { color: var(--green); }
+.phase.now .phase-title { color: var(--gold); }
+.phase .phase-title { color: var(--text-muted); }
+
+.phase-items {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Color accents per product */
+.p-accent .product-name { color: var(--accent-light); }
+.p-accent { border-color: rgba(108,92,231,0.2); }
+.p-gold .product-name { color: var(--gold); }
+.p-gold { border-color: rgba(254,202,87,0.15); }
+.p-green .product-name { color: var(--green); }
+.p-green { border-color: rgba(85,239,196,0.15); }
+.p-cyan .product-name { color: var(--cyan); }
+.p-cyan { border-color: rgba(116,185,255,0.15); }
+
+/* Back link */
+.back {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-bottom: 32px;
+}
+.back:hover { color: var(--text-dim); }
+
+/* Footer */
+.footer {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.footer a { color: var(--text-muted); text-decoration: none; }
+
+@media (max-width: 600px) {
+  .product { padding: 20px; }
+  .product-header { flex-wrap: wrap; }
+  .product-status { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="nav">
+    <a href="/main" class="nav-logo-text">TEAM<span style="color:var(--accent-light)">ON</span></a>
+    <span class="nav-badge">roadmap 2026</span>
+  </nav>
+
+  <a href="/main" class="back">← Все продукты</a>
+
+  <div class="hero">
+    <h1>Roadmap <em>продуктов</em></h1>
+    <p>Что готово, что в работе, что дальше.</p>
+  </div>
+
+  <!-- ===== 1. AgentOS ===== -->
+  <div class="product p-accent" data-delay="0">
+    <div class="product-header">
+      <span class="product-icon">🧠</span>
+      <span class="product-name">AgentOS</span>
+      <span class="product-status s-prod">production</span>
+    </div>
+    <div class="product-desc">AI-платформа. Агенты учатся, помнят, работают с файлами и API. RBAC, мультиагент, dashboard.</div>
+    <div class="phases">
+      <div class="phase done">
+        <div class="phase-title">✓ Движок</div>
+        <div class="phase-items">17 модулей, 295 тестов, Telegram + WhatsApp + Web, dashboard, RBAC, isolation</div>
+      </div>
+      <div class="phase done">
+        <div class="phase-title">✓ SkillHub + Connectors</div>
+        <div class="phase-items">8 shared skills, коннекторы WB/OZON/Bitrix24/Wazzup, Knowledge Base</div>
+      </div>
+      <div class="phase done">
+        <div class="phase-title">✓ Устойчивость</div>
+        <div class="phase-items">Fallback cascade Opus→Sonnet→GPT, token pool, OAuth rotation, on-prem (OpenCode)</div>
+      </div>
+      <div class="phase now">
+        <div class="phase-title">→ Полное тестирование + каналы</div>
+        <div class="phase-items">Полный прогон всего функционала, явный выбор TG/WhatsApp канала при создании агента</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Master Dashboard</div>
+        <div class="phase-items">Доработка dashboard: usage, мониторинг, управление всеми агентами</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Quick Deploy</div>
+        <div class="phase-items">Скрипт быстрого деплоя для новых клиентов: init → config → agents → go</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. Hints ===== -->
+  <div class="product p-gold" data-delay="100">
+    <div class="product-header">
+      <span class="product-icon">💡</span>
+      <span class="product-name">Hints</span>
+      <span class="product-status s-mvp">mvp</span>
+    </div>
+    <div class="product-desc">Подсказки менеджерам в реальном времени. STT → LLM → экран. Что говорить, что предложить, когда молчать.</div>
+    <div class="phases">
+      <div class="phase done">
+        <div class="phase-title">✓ Прототип</div>
+        <div class="phase-items">Electron app, Yandex STT + Whisper, WebSocket live delivery, контекст из KB</div>
+      </div>
+      <div class="phase now">
+        <div class="phase-title">→ Deepgram + пилот</div>
+        <div class="phase-items">Перевести STT на Deepgram (точнее, быстрее), довести пилот до измеримого результата</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Self-service</div>
+        <div class="phase-items">Упаковать как самостоятельный продукт: onboarding, настройка без разработчика</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. Meet ===== -->
+  <div class="product p-gold" data-delay="200">
+    <div class="product-header">
+      <span class="product-icon">🎥</span>
+      <span class="product-name">Meet</span>
+      <span class="product-status s-mvp">mvp</span>
+    </div>
+    <div class="product-desc">ВКС с AI-секретарём. Транскрипция, протоколы, подсказки ведущему — автоматически.</div>
+    <div class="phases">
+      <div class="phase done">
+        <div class="phase-title">✓ MVP</div>
+        <div class="phase-items">LiveKit WebRTC, Deepgram Nova-2 STT, auto-protocol (Word), AI hints для host</div>
+      </div>
+      <div class="phase now">
+        <div class="phase-title">→ Тестирование + AI-агент встреч</div>
+        <div class="phase-items">Полный прогон функционала, агент который ориентируется во встречах (контекст, участники, решения)</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Self-service</div>
+        <div class="phase-items">Упаковка: регистрация → создание комнаты → приглашение → протокол. Без разработчика.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 4. Talk ===== -->
+  <div class="product p-green" data-delay="300">
+    <div class="product-header">
+      <span class="product-icon">💬</span>
+      <span class="product-name">Talk</span>
+      <span class="product-status s-prod">production</span>
+    </div>
+    <div class="product-desc">Чат-боты и голосовые боты. Одна платформа — Telegram, WhatsApp, телефон, web.</div>
+    <div class="phases">
+      <div class="phase done">
+        <div class="phase-title">✓ Chat</div>
+        <div class="phase-items">RAG FAQ, запись на приём, CRM push, Telegram + WhatsApp + web widget</div>
+      </div>
+      <div class="phase done">
+        <div class="phase-title">✓ Voice</div>
+        <div class="phase-items">Asterisk SIP, Yandex STT + Silero TTS, сценарные диалоги, запись звонков</div>
+      </div>
+      <div class="phase now">
+        <div class="phase-title">→ Платформа</div>
+        <div class="phase-items">CRM-интеграция (amoCRM, Bitrix24), SIP-подключение, VoIP-шлюз, маршрутизация звонков</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Инфраструктура</div>
+        <div class="phase-items">On-premise деплой, LiteLLM (мульти-провайдер), PIL, отточенные кейсы маршрутизации</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. Agents ===== -->
+  <div class="product p-cyan" data-delay="400">
+    <div class="product-header">
+      <span class="product-icon">🤖</span>
+      <span class="product-name">Agents</span>
+      <span class="product-status s-dev">в разработке</span>
+    </div>
+    <div class="product-desc">Автономные AI-агенты для бизнес-процессов. Работают 24/7, отчитываются, учатся.</div>
+    <div class="phases">
+      <div class="phase now">
+        <div class="phase-title">→ MVP каждого агента</div>
+        <div class="phase-items">Продумать концепт, реализовать минимальный рабочий прототип для каждого</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">LeadSell</div>
+        <div class="phase-items">Night hunter + day farmer: парсинг → анализ → demo-бот → outreach → nurture</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">HRScreen</div>
+        <div class="phase-items">hh.ru парсинг, скрининг-интервью (chat + voice), ранжирование, досье</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">SEO / GEO</div>
+        <div class="phase-items">Оптимизация под AI-поисковики, контент-генерация, мониторинг позиций</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 6. TeamON Бизнес ===== -->
+  <div class="product" data-delay="450" style="border-color:rgba(253,114,114,0.2);">
+    <div class="product-header">
+      <span class="product-icon">🏛</span>
+      <span class="product-name" style="color:var(--hot);">TeamON Бизнес</span>
+      <span class="product-status" style="background:rgba(253,114,114,0.08);color:var(--hot);border:1px solid rgba(253,114,114,0.12);">operations</span>
+    </div>
+    <div class="product-desc">Юридическая и операционная инфраструктура компании. Гранты, ЭЦП, боты для бизнеса.</div>
+    <div class="phases">
+      <div class="phase now">
+        <div class="phase-title">→ Юридическое</div>
+        <div class="phase-items">Активировать ЭЦП, настроить МЧД (машиночитаемая доверенность), консультация по грантам (ФСИ, Сколково)</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Боты компании</div>
+        <div class="phase-items">
+          support — клиентская поддержка (userbot)<br>
+          lead AI — генерация и квалификация лидов (bot)<br>
+          sell AI — ведение сделок и follow-up (userbot)<br>
+          meet AI — секретарь встреч, протоколы (bot)<br>
+          business — внутренние задачи и отчёты (bot)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 7. MathProver ===== -->
+  <div class="product p-cyan" data-delay="500">
+    <div class="product-header">
+      <span class="product-icon">∞</span>
+      <span class="product-name">MathProver</span>
+      <span class="product-status s-prod">research</span>
+    </div>
+    <div class="product-desc">Верифицированная математика. Lean 4 + Mathlib + Claude + Wolfram. Каждый шаг доказан формально.</div>
+    <div class="phases">
+      <div class="phase done">
+        <div class="phase-title">✓ Prover engine</div>
+        <div class="phase-items">Multi-model (Claude + GPT + Gemini + Wolfram), Lean 4, Aristotle, IMO 2025: 5/6</div>
+      </div>
+      <div class="phase now">
+        <div class="phase-title">→ Авторизация + тестирование</div>
+        <div class="phase-items">Авторизация пользователей, полное тестирование pipeline, стабильность</div>
+      </div>
+      <div class="phase">
+        <div class="phase-title">Web UI + API</div>
+        <div class="phase-items">Чат с формулами, библиотека теорем, API для исследователей</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>ООО «Тимон ИИ» · TeamON</span>
+    <a href="/main">team-on.ru</a>
+  </footer>
+
+</div>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const delay = parseInt(entry.target.dataset.delay || '0');
+      setTimeout(() => entry.target.classList.add('visible'), delay);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.product').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

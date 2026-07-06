@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamON Talk — Платформа диалоговых систем</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #050508;
+            --surface: #0c0c12;
+            --surface-2: #121218;
+            --surface-3: #1a1a22;
+            --border: #252530;
+            --text: #f0eff5;
+            --text-dim: #9594a8;
+            --text-muted: #5e5d70;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --gold: #feca57;
+            --green: #55efc4;
+            --hot: #fd7272;
+            --talk: #55efc4;
+            --talk-dim: rgba(85, 239, 196, 0.15);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Noise overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* Background glows */
+        .bg-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(160px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-glow-1 { width: 700px; height: 700px; background: var(--talk); top: -250px; left: -200px; animation: glow1 25s infinite; }
+        .bg-glow-2 { width: 500px; height: 500px; background: var(--accent); bottom: -150px; right: -150px; animation: glow2 30s infinite; }
+        .bg-glow-3 { width: 400px; height: 400px; background: var(--talk); top: 50%; left: 60%; animation: glow3 20s infinite; opacity: 0.06; }
+
+        @keyframes glow1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(80px, 120px); } }
+        @keyframes glow2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-100px, -80px); } }
+        @keyframes glow3 { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-30%,-30%); } }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(24px);
+            background: rgba(5, 5, 8, 0.75);
+            border-bottom: 1px solid rgba(85, 239, 196, 0.08);
+        }
+        .nav-logo-text {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .btn-nav {
+            background: linear-gradient(135deg, var(--talk), #3ae0a8);
+            color: var(--bg);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(85, 239, 196, 0.3); }
+
+        /* Sections */
+        section {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 120px;
+            padding-bottom: 80px;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--talk-dim);
+            border: 1px solid rgba(85, 239, 196, 0.25);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--talk);
+            margin-bottom: 32px;
+        }
+        .hero h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--talk), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--text-dim);
+            max-width: 680px;
+            margin-bottom: 48px;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--talk), #3ae0a8);
+            color: var(--bg);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(85, 239, 196, 0.35); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+
+        /* Section titles */
+        .section-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .section-subtitle {
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 17px;
+            max-width: 650px;
+            margin: 0 auto 60px;
+            font-weight: 300;
+        }
+
+        /* Platform cards (2 side by side) */
+        .platforms-section { padding: 100px 24px; }
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 28px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .platform-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px 32px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+        }
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .platform-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .platform-card:hover::before { opacity: 1; }
+
+        .platform-card.chat { --card-accent: #55efc4; }
+        .platform-card.chat::before { background: linear-gradient(90deg, #55efc4, #00b894); }
+        .platform-card.chat:hover { border-color: rgba(85, 239, 196, 0.3); }
+
+        .platform-card.voice { --card-accent: #a29bfe; }
+        .platform-card.voice::before { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+        .platform-card.voice:hover { border-color: rgba(162, 155, 254, 0.3); }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .chat .card-icon { background: rgba(85, 239, 196, 0.1); }
+        .voice .card-icon { background: rgba(162, 155, 254, 0.1); }
+
+        .card-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+        .chat .card-label { color: #55efc4; }
+        .voice .card-label { color: #a29bfe; }
+
+        .card-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .card-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .card-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .card-features li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 8px;
+        }
+        .chat .card-features li::before { background: #55efc4; }
+        .voice .card-features li::before { background: #a29bfe; }
+
+        .card-price {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .card-price strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Platform capabilities strip */
+        .capabilities-section { padding: 80px 24px; }
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .capability-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 28px 22px;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .capability-card:hover {
+            border-color: rgba(85, 239, 196, 0.25);
+            transform: translateY(-3px);
+        }
+        .capability-icon { font-size: 32px; margin-bottom: 14px; }
+        .capability-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .capability-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* Niches */
+        .niches-section { padding: 100px 24px; }
+        .niches-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .niche-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 28px 16px;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .niche-card:hover { border-color: rgba(85, 239, 196, 0.25); transform: translateY(-3px); }
+        .niche-icon { font-size: 32px; margin-bottom: 12px; }
+        .niche-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .niche-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 300;
+        }
+
+        /* CTA */
+        .cta-section {
+            padding: 120px 24px;
+            text-align: center;
+        }
+        .cta-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 64px 40px;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--talk), var(--accent));
+        }
+        .cta-box h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .cta-box p {
+            color: var(--text-dim);
+            font-size: 16px;
+            margin-bottom: 32px;
+            font-weight: 300;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+        footer p { color: var(--text-muted); font-size: 14px; }
+        footer a { color: var(--text-dim); text-decoration: none; transition: color 0.3s; }
+        footer a:hover { color: var(--talk); }
+
+        /* Animations */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .platforms-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+            .capabilities-grid { grid-template-columns: repeat(2, 1fr); }
+            nav { padding: 14px 20px; }
+            .nav-links { gap: 16px; }
+            .nav-links a:not(.btn-nav) { display: none; }
+        }
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 32px; }
+            .hero-cta { flex-direction: column; align-items: center; }
+            .niches-grid { grid-template-columns: repeat(2, 1fr); }
+            .capabilities-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+
+<!-- Nav -->
+<nav>
+    <a href="/main" class="nav-logo" style="text-decoration:none"><span class="nav-logo-text">TEAM<span style="color:var(--accent-light)">ON</span></span></a>
+    <div class="nav-links">
+        <a href="#platforms">Каналы</a>
+        <a href="#capabilities">Возможности</a>
+        <a href="#niches">Кейсы</a>
+        <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="btn-nav">Подключить Talk</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge fade-up">team-on.ru/talk</div>
+    <h1 class="fade-up" style="transition-delay: 0.1s">
+        <span class="gradient">TeamON Talk</span><br>
+        Платформа<br>диалоговых систем
+    </h1>
+    <p class="fade-up" style="transition-delay: 0.2s">
+        Чат-боты и голосовые боты на одной платформе. Все сценарии, базы знаний и аналитика — в одном месте.
+    </p>
+    <div class="hero-cta fade-up" style="transition-delay: 0.3s">
+        <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="btn-primary">Подключить Talk</a>
+        <a href="#platforms" class="btn-secondary">Возможности</a>
+    </div>
+</section>
+
+<!-- Platforms -->
+<section class="platforms-section" id="platforms">
+    <h2 class="section-title fade-up">Одна платформа — все каналы</h2>
+    <p class="section-subtitle fade-up">Чаты и звонки, сценарии и аналитика — управляйте всей коммуникацией из одного места</p>
+
+    <div class="platforms-grid">
+        <!-- Chat Platform -->
+        <div class="platform-card chat fade-up">
+            <div class="card-icon">&#x1F4AC;</div>
+            <div class="card-label">Chat</div>
+            <div class="card-title">Чат-боты</div>
+            <ul class="card-features">
+                <li>Каналы: Telegram, WhatsApp, виджет на сайте</li>
+                <li>База знаний (RAG): загрузите документы, сайт, FAQ — бот знает все</li>
+                <li>Сценарии диалогов: ветвление, fallback на оператора</li>
+                <li>CRM-интеграция: amoCRM, Bitrix24 — заявки сразу в воронку</li>
+                <li>Аналитика: какие вопросы задают, где бот не справляется</li>
+                <li>Бот учится: чем больше диалогов, тем точнее ответы</li>
+            </ul>
+            <div class="card-price">от <strong>50 000 &#8381;</strong> подключение и проектирование</div>
+        </div>
+
+        <!-- Voice Platform -->
+        <div class="platform-card voice fade-up" style="transition-delay: 0.1s">
+            <div class="card-icon">&#x1F4DE;</div>
+            <div class="card-label">Voice</div>
+            <div class="card-title">Голосовые боты</div>
+            <ul class="card-features">
+                <li>Входящие: AI отвечает на звонки когда оператор занят</li>
+                <li>Исходящие: обзвон базы, напоминания, подтверждения</li>
+                <li>Естественная речь — не робот (Yandex SpeechKit + Silero)</li>
+                <li>Сценарии звонков: скрипты, ветвление, перевод на оператора</li>
+                <li>SIP/Asterisk интеграция с любой АТС</li>
+                <li>Аналитика звонков: длительность, конверсия, причины отказа</li>
+            </ul>
+            <div class="card-price">от <strong>15 &#8381;/мин</strong></div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform capabilities -->
+<section class="capabilities-section" id="capabilities">
+    <h2 class="section-title fade-up">Что дает платформа</h2>
+    <p class="section-subtitle fade-up">Единые инструменты для управления всеми диалогами вашего бизнеса</p>
+
+    <div class="capabilities-grid">
+        <div class="capability-card fade-up">
+            <div class="capability-icon">&#x1F4CB;</div>
+            <div class="capability-title">Сценарии</div>
+            <div class="capability-desc">Визуальный конструктор диалогов для чата и звонков</div>
+        </div>
+        <div class="capability-card fade-up" style="transition-delay: 0.05s">
+            <div class="capability-icon">&#x1F4DA;</div>
+            <div class="capability-title">База знаний</div>
+            <div class="capability-desc">Загрузите документы, бот ответит на любой вопрос</div>
+        </div>
+        <div class="capability-card fade-up" style="transition-delay: 0.1s">
+            <div class="capability-icon">&#x1F4CA;</div>
+            <div class="capability-title">Аналитика</div>
+            <div class="capability-desc">Что спрашивают клиенты, где бот не справляется</div>
+        </div>
+        <div class="capability-card fade-up" style="transition-delay: 0.15s">
+            <div class="capability-icon">&#x1F517;</div>
+            <div class="capability-title">Интеграции</div>
+            <div class="capability-desc">CRM, АТС, мессенджеры — все подключается</div>
+        </div>
+    </div>
+</section>
+
+<!-- Niches -->
+<section class="niches-section" id="niches">
+    <h2 class="section-title fade-up">Где Talk уже работает</h2>
+    <p class="section-subtitle fade-up">Ниши, где диалоговая автоматизация дает максимальный ROI за 1-2 месяца</p>
+
+    <div class="niches-grid">
+        <div class="niche-card fade-up">
+            <div class="niche-icon">&#x1F3E5;</div>
+            <div class="niche-name">Клиники</div>
+            <div class="niche-desc">Запись, напоминания</div>
+        </div>
+        <div class="niche-card fade-up" style="transition-delay: 0.05s">
+            <div class="niche-icon">&#x1F527;</div>
+            <div class="niche-name">Автосервисы</div>
+            <div class="niche-desc">Статус ремонта</div>
+        </div>
+        <div class="niche-card fade-up" style="transition-delay: 0.1s">
+            <div class="niche-icon">&#x1F4E6;</div>
+            <div class="niche-name">ПВЗ</div>
+            <div class="niche-desc">Где мой заказ</div>
+        </div>
+        <div class="niche-card fade-up" style="transition-delay: 0.15s">
+            <div class="niche-icon">&#x1F487;</div>
+            <div class="niche-name">Салоны</div>
+            <div class="niche-desc">Запись, отмены</div>
+        </div>
+        <div class="niche-card fade-up" style="transition-delay: 0.2s">
+            <div class="niche-icon">&#x1F4DE;</div>
+            <div class="niche-name">Колл-центры</div>
+            <div class="niche-desc">Разгрузка операторов</div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-box fade-up">
+        <h2>Подключить <span style="color: var(--talk)">Talk</span></h2>
+        <p>Расскажем, как платформа диалоговых систем работает для вашей ниши. Первая консультация бесплатно.</p>
+        <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="btn-primary">teamonai@yandex.ru</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&#169; 2026 ООО &#171;Тимон ИИ&#187; &middot; TeamON</p>
+    <p style="margin-top: 8px;">
+        <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;">teamonai@yandex.ru</a>
+    </p>
+</footer>
+
+<script>
+// Scroll-triggered fade-up animations with staggered delays
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const delay = entry.target.style.transitionDelay || '0s';
+            const ms = parseFloat(delay) * 1000;
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, ms);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+</script>
+
+<div id="contactModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#0c0c12;border:1px solid #252530;border-radius:20px;padding:36px;max-width:380px;width:90%;position:relative;">
+    <button onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
+    <h3 style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">Свяжитесь с нами</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="mailto:teamonai@yandex.ru" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">📧 teamonai@yandex.ru</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

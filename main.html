@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeamON — AI-платформа для бизнеса</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --surface: #0c0c12;
+    --surface-2: #121218;
+    --surface-3: #1a1a22;
+    --border: #252530;
+    --text: #f0eff5;
+    --text-dim: #9594a8;
+    --text-muted: #5e5d70;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-dim: rgba(108, 92, 231, 0.08);
+    --accent-glow: rgba(108, 92, 231, 0.2);
+    --hot: #fd7272;
+    --hot-dim: rgba(253, 114, 114, 0.08);
+    --hot-glow: rgba(253, 114, 114, 0.15);
+    --gold: #feca57;
+    --gold-dim: rgba(254, 202, 87, 0.06);
+    --green: #55efc4;
+    --green-dim: rgba(85, 239, 196, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 1000px 700px at 20% -10%, rgba(108, 92, 231, 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 900px at 80% 110%, rgba(253, 114, 114, 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 500px 500px at 60% 40%, rgba(254, 202, 87, 0.025) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 28px 120px;
+  }
+
+  /* ---- NAV ---- */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .nav-logo-text {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  .nav-badge {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    text-align: center;
+    padding: 0 0 72px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.15s forwards;
+  }
+
+  .hero-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  /* ---- GRID ---- */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 60px;
+  }
+
+  @media (max-width: 720px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 721px) and (max-width: 900px) {
+    .products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .product-card:last-child {
+      grid-column: 1 / -1;
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+    }
+  }
+
+  /* ---- CARD ---- */
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    opacity: 0;
+  }
+
+  .product-card:nth-child(1) { animation: fadeUp 0.5s ease 0.3s forwards; }
+  .product-card:nth-child(2) { animation: fadeUp 0.5s ease 0.4s forwards; }
+  .product-card:nth-child(3) { animation: fadeUp 0.5s ease 0.5s forwards; }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 20px;
+    pointer-events: none;
+  }
+
+  .product-card:hover {
+    transform: translateY(-3px);
+  }
+
+  /* AI card — purple */
+  .card-ai {
+    border-color: rgba(108, 92, 231, 0.2);
+  }
+  .card-ai::before {
+    background: radial-gradient(ellipse 300px 200px at 50% 0%, rgba(108, 92, 231, 0.08) 0%, transparent 70%);
+  }
+  .card-ai:hover {
+    border-color: rgba(108, 92, 231, 0.45);
+  }
+  .card-ai:hover::before {
+    opacity: 1;
+  }
+
+  /* Talk card — green */
+  .card-talk {
+    border-color: rgba(85, 239, 196, 0.15);
+  }
+  .card-talk::before {
+    background: radial-gradient(ellipse 300px 200px at 50% 0%, rgba(85, 239, 196, 0.07) 0%, transparent 70%);
+  }
+  .card-talk:hover {
+    border-color: rgba(85, 239, 196, 0.35);
+  }
+  .card-talk:hover::before {
+    opacity: 1;
+  }
+
+  /* Agents card — gold */
+  .card-agents {
+    border-color: rgba(254, 202, 87, 0.15);
+  }
+  .card-agents::before {
+    background: radial-gradient(ellipse 300px 200px at 50% 0%, rgba(254, 202, 87, 0.07) 0%, transparent 70%);
+  }
+  .card-agents:hover {
+    border-color: rgba(254, 202, 87, 0.35);
+  }
+  .card-agents:hover::before {
+    opacity: 1;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+
+  .card-ai .card-icon   { background: var(--accent-dim); }
+  .card-talk .card-icon { background: var(--green-dim); }
+  .card-agents .card-icon { background: var(--gold-dim); }
+
+  .card-label {
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .card-ai .card-label     { color: var(--accent-light); }
+  .card-talk .card-label   { color: var(--green); }
+  .card-agents .card-label { color: var(--gold); }
+
+  .card-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    flex: 1;
+  }
+
+  .card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .chip {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 4px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .card-ai .chip     { background: var(--accent-dim); color: var(--accent-light); border: 1px solid rgba(108,92,231,0.15); }
+  .card-talk .chip   { background: var(--green-dim); color: var(--green); border: 1px solid rgba(85,239,196,0.15); }
+  .card-agents .chip { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(254,202,87,0.12); }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .card-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-live  { background: var(--green); box-shadow: 0 0 6px rgba(85,239,196,0.5); }
+  .dot-dev   { background: var(--gold); box-shadow: 0 0 6px rgba(254,202,87,0.4); }
+  .dot-alpha { background: var(--hot); box-shadow: 0 0 6px rgba(253,114,114,0.4); }
+
+  .card-arrow {
+    font-size: 16px;
+    color: var(--text-muted);
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .product-card:hover .card-arrow {
+    transform: translate(3px, -3px);
+  }
+
+  .card-ai:hover .card-arrow     { color: var(--accent-light); }
+  .card-talk:hover .card-arrow   { color: var(--green); }
+  .card-agents:hover .card-arrow { color: var(--gold); }
+
+  /* ---- CORE STRIP ---- */
+  .core-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.6s forwards;
+  }
+
+  .core-strip::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-light) 100%);
+    border-radius: 3px;
+  }
+
+  .core-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .core-text {
+    flex: 1;
+  }
+
+  .core-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .core-title span {
+    color: var(--accent-light);
+  }
+
+  .core-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .core-tag {
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    background: var(--accent-dim);
+    border: 1px solid rgba(108,92,231,0.15);
+    border-radius: 6px;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+
+  /* ---- PARTNER STRIP ---- */
+  .partner-strip {
+    background: linear-gradient(135deg, rgba(108,92,231,0.04) 0%, rgba(254,202,87,0.03) 100%);
+    border: 1px solid rgba(108,92,231,0.12);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.7s forwards;
+  }
+
+  .partner-left {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .partner-eyebrow {
+    font-size: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .partner-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .partner-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .partner-levels {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .level-badge {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 5px 11px;
+    border-radius: 8px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .level-1 { background: rgba(85,239,196,0.06); color: var(--green); border: 1px solid rgba(85,239,196,0.12); }
+  .level-2 { background: rgba(108,92,231,0.06); color: var(--accent-light); border: 1px solid rgba(108,92,231,0.12); }
+  .level-3 { background: rgba(254,202,87,0.06); color: var(--gold); border: 1px solid rgba(254,202,87,0.12); }
+  .level-arr { color: var(--text-muted); font-size: 12px; }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.8s forwards;
+  }
+
+  .footer-brand {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-link {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-link:hover { color: var(--text-dim); }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Nav -->
+  <nav class="nav">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-mark">T</div>
+      <span class="nav-logo-text">TeamON</span>
+    </a>
+    <span class="nav-badge">AI-платформа для бизнеса</span>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <p class="hero-eyebrow">Тимон ИИ &nbsp;·&nbsp; 2026</p>
+    <h1 class="hero-title">Включи <em>AI-команду</em><br>в своём бизнесе</h1>
+    <p class="hero-sub">Три продукта — внутренняя автоматизация, внешние коммуникации и автономные агенты продаж. Единая платформа.</p>
+  </div>
+
+  <!-- Products grid -->
+  <div class="products-grid">
+
+    <!-- TeamON AI -->
+    <a href="/" class="product-card card-ai">
+      <div class="card-icon">🧠</div>
+      <p class="card-label">Внутренняя автоматизация</p>
+      <h2 class="card-name">TeamON AI</h2>
+      <p class="card-desc">AI-платформа для сотрудников. Настраиваемые агенты, база знаний, автоматизация рутины внутри компании.</p>
+      <div class="card-chips">
+        <span class="chip">агенты</span>
+        <span class="chip">база знаний</span>
+        <span class="chip">cron</span>
+        <span class="chip">Telegram</span>
+      </div>
+      <div class="card-footer">
+        <div class="card-status">
+          <div class="status-dot dot-live"></div>
+          production
+        </div>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <!-- TeamON Talk -->
+    <a href="#talk" class="product-card card-talk">
+      <div class="card-icon">💬</div>
+      <p class="card-label">Внешние коммуникации</p>
+      <h2 class="card-name">TeamON Talk</h2>
+      <p class="card-desc">AI на линии с клиентами. Голосовые боты, чат-боты и подсказки операторам — единый стек STT/TTS/SIP.</p>
+      <div class="card-chips">
+        <span class="chip">голос</span>
+        <span class="chip">чат</span>
+        <span class="chip">подсказки</span>
+        <span class="chip">SIP/SBC</span>
+      </div>
+      <div class="card-footer">
+        <div class="card-status">
+          <div class="status-dot dot-dev"></div>
+          beta
+        </div>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <!-- TeamON Agents -->
+    <a href="#agents" class="product-card card-agents">
+      <div class="card-icon">🤖</div>
+      <p class="card-label">Автономные решения</p>
+      <h2 class="card-name">TeamON Agents</h2>
+      <p class="card-desc">Автономные AI-агенты, работающие сами. Находят лидов, греют, скринят кандидатов — пока вы спите.</p>
+      <div class="card-chips">
+        <span class="chip">LeadSell</span>
+        <span class="chip">HRScreen</span>
+        <span class="chip">Reactivate</span>
+      </div>
+      <div class="card-footer">
+        <div class="card-status">
+          <div class="status-dot dot-alpha"></div>
+          alpha
+        </div>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Core strip -->
+  <div class="core-strip">
+    <div class="core-icon">⚙️</div>
+    <div class="core-text">
+      <p class="core-title"><span>TeamON Core</span> — движок под капотом</p>
+      <p class="core-desc">LLM API, навыки, память, автономность. Все три продукта работают на одном ядре. Партнёры видят только интерфейс — код закрыт.</p>
+    </div>
+    <span class="core-tag">closed source</span>
+  </div>
+
+  <!-- Partner strip -->
+  <div class="partner-strip">
+    <div class="partner-left">
+      <p class="partner-eyebrow">Партнёрская программа</p>
+      <h3 class="partner-title">Продавайте под своим брендом</h3>
+      <p class="partner-desc">Реферал, агент, реселлер, VAR или white label — путь от первой сделки до своей AI-компании.</p>
+    </div>
+    <div class="partner-levels">
+      <span class="level-badge level-1">Реферал 10%</span>
+      <span class="level-arr">→</span>
+      <span class="level-badge level-2">Агент 20%</span>
+      <span class="level-arr">→</span>
+      <span class="level-badge level-3">VAR 50%</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span class="footer-brand">ООО «Тимон ИИ» · TeamON</span>
+    <nav class="footer-links">
+      <a href="/" class="footer-link">team-on.ru</a>
+      <a href="mailto:hello@team-on.ru" class="footer-link">hello@team-on.ru</a>
+    </nav>
+  </footer>
+
+</div>
+</body>
+</html>
