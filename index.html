@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI-сотрудник для вашего бизнеса — TeamON AI</title>
+<title>Снимите ручную работу с команды — TeamON</title>
+<meta name="description" content="TeamON собирает данные из CRM, Telegram, почты и таблиц, находит отклонения и готовит следующие действия. Управляемые AI-процессы в вашем контуре и по вашим правилам.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #050508;
@@ -79,7 +80,7 @@
     top: -60px;
     left: 50%;
     transform: translateX(-50%);
-    width: 500px;
+    width: min(500px, 100%);
     height: 500px;
     background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
     pointer-events: none;
@@ -117,6 +118,22 @@
     background-clip: text;
   }
 
+  .eyebrow {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 7px 12px;
+    border: 1px solid rgba(108, 92, 231, 0.3);
+    border-radius: 999px;
+    background: var(--accent-dim);
+    color: var(--accent-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    animation: fadeDown 0.6s ease-out 0.05s both;
+  }
+
   .hero-sub {
     font-size: 20px;
     color: var(--text-dim);
@@ -126,6 +143,16 @@
     margin: 0 auto;
     position: relative;
     animation: fadeDown 0.6s ease-out 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    position: relative;
+    animation: fadeDown 0.6s ease-out 0.3s both;
   }
 
   /* ---- SPEED STRIP ---- */
@@ -140,11 +167,15 @@
     animation: fadeDown 0.6s ease-out 0.3s both;
   }
 
-  .speed-item { text-align: center; }
+  .speed-item {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
 
   .speed-item .num {
     font-family: 'Unbounded', sans-serif;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--accent-light);
     line-height: 1;
@@ -184,6 +215,49 @@
     font-weight: 300;
     line-height: 1.8;
     margin-bottom: 28px;
+  }
+
+  /* ---- PROCESS ---- */
+  .process-steps {
+    display: grid;
+    gap: 8px;
+    margin: 30px 0;
+  }
+
+  .process-step {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .process-step .step-num {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(108, 92, 231, 0.25);
+    color: var(--accent-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .process-step h4 {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+
+  .process-step p {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
   }
 
   /* ---- FEATURES ---- */
@@ -398,6 +472,42 @@
     color: var(--gold);
     font-size: 10px;
     top: 9px;
+  }
+
+  .choice-title {
+    margin-top: 34px;
+    font-size: 15px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .choice {
+    padding: 18px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .choice.recommended { border-color: var(--accent); }
+  .choice h4 { font-size: 13px; margin-bottom: 7px; }
+  .choice .choice-price {
+    color: var(--accent-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .choice p {
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.5;
   }
 
   /* ---- URGENCY ---- */
@@ -649,9 +759,11 @@
     .hero h1 { font-size: 28px; }
     .hero-sub { font-size: 17px; }
     .speed-strip { gap: 20px; }
-    .speed-item .num { font-size: 24px; }
+    .speed-item .num { font-size: 16px; }
+    .speed-item .label { font-size: 10px; }
     .features { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .pricing { grid-template-columns: 1fr; }
+    .choices { grid-template-columns: 1fr; }
     .price-amount { font-size: 28px; }
     .trust { flex-direction: column; }
     .section-head { font-size: 20px; }
@@ -667,115 +779,118 @@
     })(window, document,"script","https://mc.yandex.ru/metrika/tag.js?id=107062766", "ym");
     ym(107062766, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/107062766" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 </head>
 <body>
+<noscript><div><img src="https://mc.yandex.ru/watch/107062766" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
 <div class="page">
 
   <!-- ======== HERO ======== -->
   <div class="hero">
-    <div class="brand">TEAM<span class="on">ON</span> AI</div>
+    <div class="brand">TEAM<span class="on">ON</span></div>
+    <div class="eyebrow">Управляемые AI-процессы</div>
     <h1>
-      AI-сотрудник<br>
-      <span class="em">уже на этой неделе</span>
+      Снимите ручную работу.<br>
+      <span class="em">Оставьте контроль.</span>
     </h1>
     <p class="hero-sub">
-      Пока другие обсуждают искусственный интеллект —
-      вы уже внедряете его в свой бизнес.
-      Один AI-сотрудник, который работает 24/7.
+      TeamON собирает данные из CRM, Telegram, почты и таблиц,
+      находит отклонения и готовит следующие действия.
+      Вы задаёте правила — мы отвечаем за работу процесса.
     </p>
+    <div class="hero-actions">
+      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="cta-button">Разобрать мои процессы</a>
+      <a href="https://t.me/nlarryelvis" class="cta-button demo">Написать Ларри</a>
+    </div>
   </div>
 
   <!-- ======== SPEED ======== -->
   <div class="speed-strip">
     <div class="speed-item">
-      <div class="num">1</div>
-      <div class="label">день на запуск</div>
+      <div class="num">ДАННЫЕ</div>
+      <div class="label">CRM, почта, чаты, таблицы</div>
     </div>
     <div class="speed-item">
-      <div class="num">24/7</div>
-      <div class="label">работает без выходных</div>
+      <div class="num">РАБОТА</div>
+      <div class="label">сбор, сверка, подготовка действий</div>
     </div>
     <div class="speed-item">
-      <div class="num">1</div>
-      <div class="label">AI-сотрудник</div>
+      <div class="num">ЭФФЕКТ</div>
+      <div class="label">больше прибыли, меньше расходов и операционных потерь</div>
     </div>
   </div>
 
   <!-- ======== WHAT IS IT ======== -->
   <div class="section">
-    <h2 class="section-head">Не бот. ИИ-Сотрудник.</h2>
+    <h2 class="section-head">Не чат. Реальная работа.</h2>
     <p class="section-text">
-      Вы просто пишете или говорите голосом — на обычном языке.
-      Никаких команд, кнопок, интерфейсов. Сказали «следи за конкурентами
-      каждое утро» — он следит. Попросили «разберись в этих цифрах» — разбирается.
-      Подключается к CRM, выполняет реальную работу, растёт вместе с вами.
+      AI не просто отвечает на вопросы. Он по расписанию собирает данные,
+      находит отклонения, готовит решение и возвращается к вам только там,
+      где действительно нужен человек.
     </p>
 
-    <div class="features">
-      <div class="feature">
-        <span class="feature-icon">🧠</span>
-        <h4>Помнит всё</h4>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div>
+          <h4>Считаем потери</h4>
+          <p>Сколько часов, денег и внимания забирает ручная работа сейчас.</p>
+        </div>
       </div>
-      <div class="feature">
-        <span class="feature-icon">💤</span>
-        <h4>Не проспит</h4>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div>
+          <h4>Подключаем ваши системы</h4>
+          <p>CRM, Telegram, почту, таблицы, 1С и нужные API — без переноса бизнеса в новый интерфейс.</p>
+        </div>
       </div>
-      <div class="feature">
-        <span class="feature-icon">🎙</span>
-        <h4>Понимает голос</h4>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div>
+          <h4>Задаём правила</h4>
+          <p>Что AI делает сам, о чём сообщает и какие решения сначала согласует с вами.</p>
+        </div>
       </div>
-      <div class="feature">
-        <span class="feature-icon">🚪</span>
-        <h4>Не уволится</h4>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div>
+          <h4>Запускаем на реальной работе</h4>
+          <p>Проверяем не красивое демо, а изменение выбранной бизнес-метрики в реальной работе.</p>
+        </div>
       </div>
-      <div class="feature">
-        <span class="feature-icon">📈</span>
-        <h4>Умнеет</h4>
-      </div>
-      <div class="feature">
-        <span class="feature-icon">🔒</span>
-        <h4>Только ваш</h4>
+      <div class="process-step">
+        <div class="step-num">05</div>
+        <div>
+          <h4>Измеряем и расширяем</h4>
+          <p>Сравниваем время, деньги или скорость реакции с исходной точкой и подключаем следующие процессы.</p>
+        </div>
       </div>
     </div>
 
-    <button class="examples-toggle" onclick="toggleExamples(this)">
-      Что он умеет — примеры <span class="arrow">▼</span>
+    <button class="examples-toggle" aria-expanded="false" aria-controls="examples" onclick="toggleExamples(this)">
+      Что можно передать AI уже сейчас <span class="arrow">▼</span>
     </button>
     <div class="examples-grid" id="examples">
       <div class="example-row">
-        <div class="example-cat">Продажи</div>
-        <div class="example-text">Утренняя сводка продаж ВБ/ОЗОН, динамика, остатки — без вашего запроса</div>
+        <div class="example-cat">Операции</div>
+        <div class="example-text">Собирает недельную сводку, находит отклонения и предлагает следующие действия</div>
       </div>
       <div class="example-row">
-        <div class="example-cat">CRM</div>
-        <div class="example-text">Работает с Битрикс24 и amoCRM — сделки, задачи, контроль менеджеров</div>
-      </div>
-      <div class="example-row">
-        <div class="example-cat">Конкуренты</div>
-        <div class="example-text">Мониторит цены, ассортимент и позиции конкурентов, сообщает об изменениях</div>
-      </div>
-      <div class="example-row">
-        <div class="example-cat">Аналитика</div>
-        <div class="example-text">Считает юнит-экономику, маржу, сравнивает периоды — по запросу или по расписанию</div>
-      </div>
-      <div class="example-row">
-        <div class="example-cat">Команда</div>
-        <div class="example-text">Контроль задач, напоминания сотрудникам, сбор отчётов с команды</div>
-      </div>
-      <div class="example-row">
-        <div class="example-cat">Research</div>
-        <div class="example-text">Поиск поставщиков, анализ рынка, подбор информации по любому запросу</div>
+        <div class="example-cat">Маркетплейсы</div>
+        <div class="example-text">Сверяет остатки, маржу и рекламу — заранее показывает риск дефицита или убытка</div>
       </div>
       <div class="example-row">
         <div class="example-cat">Документы</div>
-        <div class="example-text">Разбирает таблицы, PDF, коммерческие предложения — выделяет главное</div>
+        <div class="example-text">Разбирает акты, счета и договоры, сверяет данные и выносит расхождения</div>
       </div>
       <div class="example-row">
-        <div class="example-cat">Отчёты</div>
-        <div class="example-text">Формирует ежедневные и еженедельные отчёты — сам, без напоминаний</div>
+        <div class="example-cat">Продажи</div>
+        <div class="example-text">Квалифицирует обращение, заполняет карточку и готовит менеджеру следующий шаг</div>
+      </div>
+      <div class="example-row">
+        <div class="example-cat">Знания</div>
+        <div class="example-text">Отвечает по регламентам со ссылкой на источник, спорное передаёт ответственному</div>
       </div>
     </div>
   </div>
@@ -783,61 +898,75 @@
   <!-- ======== DEMO BANNER ======== -->
   <div class="section">
     <div class="demo-banner">
-      <p>Попробуйте прямо сейчас — напишите нашему демо-ассистенту</p>
-      <a href="https://t.me/TeamOn_aibot" class="cta-button">Попробовать демо →</a>
+      <p><strong>Сначала разберите реальную задачу.</strong><br>Опишите ручную работу — Ларри поможет разложить её на процесс и честно скажет, где AI не нужен.</p>
+      <a href="https://t.me/nlarryelvis" class="cta-button">Разобрать задачу с основателем →</a>
     </div>
   </div>
 
   <!-- ======== PRICING ======== -->
   <div class="section">
-    <h2 class="section-head">Два варианта старта</h2>
+    <h2 class="section-head">Инструмент или работающий процесс</h2>
+    <p class="section-text">Нужен сам OpenClaw — установим и обучим команду. Нужно убрать ручную работу — разберём процесс, подключим системы и докажем эффект на бизнес-метрике.</p>
 
     <div class="pricing">
       <div class="price-card main">
-        <div class="price-tag">Быстрый старт</div>
-        <div class="price-amount">100к</div>
-        <div class="price-period">установка и настройка</div>
-        <div class="price-then">+ 50 000 ₽/мес</div>
+        <div class="price-tag">OpenClaw Install</div>
+        <div class="price-amount">49к</div>
+        <div class="price-period">технический запуск с обучением</div>
+        <div class="price-then">без проектирования бизнес-процесса</div>
         <ul class="price-list">
-          <li>AI-сотрудник с памятью и самообучением</li>
-          <li>Выделенный сервер</li>
-          <li>Безопасность: изоляция, шифрование, защита от взлома</li>
-          <li>Подключение CRM вашего бизнеса</li>
-          <li>Мониторинг, бэкапы, автовосстановление</li>
-          <li>Оптимизация расходов заложена в сборку</li>
+          <li>Установка на согласованный сервер</li>
+          <li>Базовая настройка и доступы</li>
+          <li><strong>Обучение вашей команды</strong></li>
+          <li>Проверка рабочих сценариев</li>
+          <li>Все доступы и инструкция остаются у вас</li>
         </ul>
       </div>
 
       <div class="price-card vip">
-        <div class="price-tag">Под ключ</div>
-        <div class="price-amount">500к</div>
-        <div class="price-period">глубокий сетап + платформа</div>
-        <div class="price-then">+ 200 000 ₽/мес</div>
+        <div class="price-tag">AI-процесс под ключ</div>
+        <div class="price-amount">от 149к</div>
+        <div class="price-period">карта процессов + первый рабочий контур</div>
+        <div class="price-then">точный объём до старта · оплата 50/50</div>
         <ul class="price-list">
-          <li>Всё из Быстрого старта</li>
-          <li><strong>Доступ к платформе с первого дня</strong> — управляйте всеми агентами в одном месте</li>
-          <li>Проектируем процессы вместе с вами</li>
-          <li>Дообучение агентов на реальных диалогах в первые 2-3 месяца</li>
-          <li>Плотная поддержка: реакция в часах, не днях</li>
-          <li>Архитектура знаний о вашем бизнесе</li>
-          <li>Расписание: отчёты, мониторинг, напоминания</li>
-          <li>Обучение вашей команды</li>
-          <li>Совместный customer success — доводим до ROI вместе</li>
-          <li>Созвон с основателем по AI-стратегии</li>
+          <li>Находим 3–5 точек потери времени и денег</li>
+          <li>Запускаем первую связку задач на ваших данных</li>
+          <li>Выбираем бизнес-метрику: время, деньги или скорость реакции</li>
+          <li>Настраиваем интеграции и правила работы</li>
+          <li>Обучаем команду и стабилизируем 30 дней</li>
+          <li>Готовим план расширения на следующие процессы</li>
         </ul>
+      </div>
+    </div>
+
+    <div class="choice-title">После запуска — без привязки к TeamON</div>
+    <div class="choices">
+      <div class="choice">
+        <h4>Работаете сами</h4>
+        <div class="choice-price">0 ₽/мес.</div>
+        <p>Система, данные и инструкция остаются у вашей команды.</p>
+      </div>
+      <div class="choice">
+        <h4>Care · Техника</h4>
+        <div class="choice-price">14 900 ₽/мес.</div>
+        <p>Следим, обновляем, делаем резервные копии и восстанавливаем после сбоев.</p>
+      </div>
+      <div class="choice recommended">
+        <h4>Business Ops · Процесс</h4>
+        <div class="choice-price">39 900 ₽/мес.</div>
+        <p>Оператор TeamON следит за бизнес-метрикой, разбирает исключения и улучшает процесс.</p>
       </div>
     </div>
   </div>
 
-  <!-- ======== URGENCY ======== -->
+  <!-- ======== BOUNDARY ======== -->
   <div class="section">
     <div class="urgency">
-      <h3>AI — это не будущее. Это сейчас.</h3>
+      <h3>Не продаём магию. Убираем конкретную ручную работу.</h3>
       <p>
-        Через год AI-сотрудники будут у всех.
-        Вопрос в том, <span class="highlight">кто начнёт учить их первым</span> —
-        вы или ваши конкуренты. Чем раньше начнёте —
-        тем умнее будет ваша AI-команда, когда другие только стартуют.
+        До старта фиксируем, что забирает AI, какая бизнес-метрика должна измениться и где
+        решение остаётся за вами. Если экономического смысла нет,
+        <span class="highlight">скажем об этом до оплаты</span>.
       </p>
     </div>
   </div>
@@ -846,19 +975,19 @@
   <div class="section">
     <div class="trust">
       <div class="trust-item">
-        <span class="icon">🚀</span>
-        <h5>5+ агентов</h5>
-        <p>в продакшне</p>
+        <span class="icon">🏠</span>
+        <h5>Всё остаётся у вас</h5>
+        <p>система, данные, доступы и инструкция</p>
       </div>
       <div class="trust-item">
-        <span class="icon">🏭</span>
-        <h5>3 отрасли</h5>
-        <p>подключены</p>
+        <span class="icon">✋</span>
+        <h5>Считаем эффект</h5>
+        <p>до запуска фиксируем метрику и исходную точку</p>
       </div>
       <div class="trust-item">
-        <span class="icon">⏱</span>
-        <h5>&lt; 1 дня</h5>
-        <p>на запуск</p>
+        <span class="icon">◎</span>
+        <h5>Есть ответственный</h5>
+        <p>оператор TeamON не бросает процесс после запуска</p>
       </div>
     </div>
   </div>
@@ -868,48 +997,46 @@
     <h2 class="section-head">Вопросы</h2>
     <div class="faq">
       <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Что входит в установку?</button>
-        <div class="faq-a">
-          <p>Разворачиваем на вашем сервере или арендуем изолированный в облаке — подбираем конфиг, разворачиваем нашу платформу поверх OpenClaw: это целая экосистема — память, самообучение, безопасность, проактивность, CRM, мониторинг. Готовый AI-сотрудник, а не голый конструктор. Выводим в нужный интерфейс — Telegram-бот, сайт или другой канал.</p>
-          <p><strong>База:</strong> AI-агент с памятью и самообучением, голосовые, веб-поиск, база знаний, CRM-коннектор, безопасность (config-guard, SSL, изоляция), оптимизация расходов.</p>
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-1" onclick="toggleFaq(this)">Что если процессов несколько?</button>
+        <div class="faq-a" id="faq-answer-1">
+          <p>Составим карту 3–5 процессов, оценим эффект и зависимости. Связанные задачи объединим в один запуск, независимые сможем вести параллельно.</p>
         </div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">За что я плачу ежемесячно?</button>
-        <div class="faq-a">
-          <p>Три вещи:</p>
-          <p><strong>Инфраструктура</strong> — выделенный сервер, распознавание голоса, поиск.</p>
-          <p><strong>Устойчивость</strong> — мониторинг 24/7, бэкапы, обновления, упал — подняли.</p>
-          <p><strong>Экспертиза</strong> — тюнинг агента по фидбэку, доступ к новым скиллам платформы.</p>
-          <p>Подписку на LLM-провайдера (Claude, GigaChat и т.д.) клиент оплачивает самостоятельно.</p>
-          <p>Не хотите что-то из этого — берёте на себя, цена падает.</p>
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-2" onclick="toggleFaq(this)">Где будет размещена система?</button>
+        <div class="faq-a" id="faq-answer-2">
+          <p>На вашем сервере, VPS или в отдельно согласованном контуре TeamON. До старта фиксируем, где лежат данные, кому принадлежат доступы и как передаётся система.</p>
         </div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Можно поставить на свой сервер?</button>
-        <div class="faq-a">Да. 100 000 ₽ разово — экспертная сборка с защитой и оптимизациями на ваш сервер. Гайд по управлению в подарок. Дальше сами, консультации 10 000 ₽/час если нужна помощь.</div>
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-3" onclick="toggleFaq(this)">Обучение сотрудников входит?</button>
+        <div class="faq-a" id="faq-answer-3">Да. Сотрудники сами проходят рабочие сценарии, учатся управлять системой и знают, что делать при сбое.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Нужен ли выделенный специалист?</button>
-        <div class="faq-a">В базовую подписку входит тюнинг и обновления. Если нужно плотное сопровождение — добавляется поддержка с выделенным специалистом: настройка скриптов, новые скиллы, адаптация под бизнес-процессы. Обсудим на созвоне.</div>
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-4" onclick="toggleFaq(this)">Обязательна ли подписка после запуска?</button>
+        <div class="faq-a" id="faq-answer-4">Нет. Можно работать самостоятельно за 0 ₽/мес., подключить технический Care или передать TeamON эксплуатацию процесса.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">Чем это отличается от обычного GPT-бота?</button>
-        <div class="faq-a">Обычный бот — один диалог без памяти. Наш агент помнит всё между сессиями, сам инициирует действия (напоминания, отчёты, follow-up), работает с CRM и бизнес-инструментами, настраивается через обычный разговор. Это AI-сотрудник, а не чат-бот.</div>
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-5" onclick="toggleFaq(this)">За что платят в Business Ops?</button>
+        <div class="faq-a" id="faq-answer-5">За оператора, который следит за бизнес-метрикой, разбирает исключения, обновляет правила и показывает, что изменилось за месяц.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-answer-6" onclick="toggleFaq(this)">Что оплачивается отдельно?</button>
+        <div class="faq-a" id="faq-answer-6">Сервер, модели и внешние API. Новые процессы и крупные интеграции заранее оцениваем отдельно.</div>
       </div>
     </div>
   </div>
 
   <!-- ======== CTA ======== -->
   <div class="cta">
-    <div class="cta-head">Готовы попробовать?</div>
-    <p class="cta-sub">Напишите — запустим уже завтра</p>
+    <div class="cta-head">Покажите процесс, который съедает время.</div>
+    <p class="cta-sub">Определим, что можно снять с команды, какие данные нужны и во что обойдётся запуск.</p>
     <div class="cta-buttons">
-      <a href="https://t.me/TeamOn_aibot" class="cta-button demo">Попробовать демо</a>
-      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="cta-button">Получить своего</a>
+      <a href="#" onclick="document.getElementById('contactModal').style.display='flex';return false;" class="cta-button">Разобрать мои процессы</a>
+      <a href="https://t.me/nlarryelvis" class="cta-button demo">Написать Ларри</a>
     </div>
-    <p class="cta-note">Начните учить своих ИИ-сотрудников уже на этой неделе</p>
-    <div class="cta-brand">TEAM<span class="on">ON</span> AI</div>
+    <p class="cta-note">Без презентации на 40 слайдов. По вашей реальной работе.</p>
+    <div class="cta-brand">TEAM<span class="on">ON</span></div>
   </div>
 
 </div>
@@ -930,15 +1057,24 @@
     const grid = document.getElementById('examples');
     btn.classList.toggle('open');
     grid.classList.toggle('open');
+    btn.setAttribute('aria-expanded', grid.classList.contains('open'));
+  }
+
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    item.classList.toggle('open');
+    btn.setAttribute('aria-expanded', item.classList.contains('open'));
   }
 </script>
 
-<div id="contactModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+<div id="contactModal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(5,5,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
   <div style="background:#0c0c12;border:1px solid #252530;border-radius:20px;padding:36px;max-width:380px;width:90%;position:relative;">
-    <button onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
-    <h3 style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;">Свяжитесь с нами</h3>
+    <button aria-label="Закрыть" onclick="document.getElementById('contactModal').style.display='none'" style="position:absolute;top:14px;right:14px;background:none;border:none;color:#5e5d70;font-size:20px;cursor:pointer;">&times;</button>
+    <h3 id="contactModalTitle" style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;">Что у вас до сих пор делается руками?</h3>
+    <p style="color:#9594a8;font-size:13px;line-height:1.6;margin-bottom:18px;">Назовите 2–3 повторяющиеся задачи: кто их делает, как часто и где лежат данные. Ларри поможет выбрать лучший первый запуск.</p>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <a href="mailto:teamonai@yandex.ru" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">📧 teamonai@yandex.ru</a>
+      <a href="https://t.me/nlarryelvis" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">◎ Написать Ларри в Telegram</a>
+      <a href="mailto:teamonai@yandex.ru?subject=%D0%A0%D0%B0%D0%B7%D0%B1%D0%BE%D1%80%20AI-%D0%BF%D1%80%D0%BE%D1%86%D0%B5%D1%81%D1%81%D0%B0" style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.15);border-radius:12px;text-decoration:none;color:#a29bfe;font-size:14px;">✉ teamonai@yandex.ru</a>
     </div>
   </div>
 </div>
