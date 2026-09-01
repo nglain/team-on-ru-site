@@ -913,17 +913,7 @@
     .timon-send { min-height: 46px; }
   }
 </style>
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,"script","https://mc.yandex.ru/metrika/tag.js?id=107062766", "ym");
-    ym(107062766, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<!-- /Yandex.Metrika counter -->
+<script src="/analytics.js"></script>
 </head>
 <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/107062766" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -1215,7 +1205,7 @@
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     setTimeout(() => document.getElementById('timonInput')?.focus(), 50);
-    if (typeof ym === 'function') ym(107062766, 'reachGoal', 'timon_chat_open');
+    window.TeamONAnalytics?.goal('timon_chat_open');
   }
 
   function closeTimonChat() {
@@ -1254,6 +1244,7 @@
       event.preventDefault();
       const message = input.value.trim();
       if (!message || send.disabled) return;
+      window.TeamONAnalytics?.goal('timon_chat_submit');
       appendTimonMessage('user', message);
       input.value = '';
       send.disabled = true;
@@ -1271,8 +1262,9 @@
         pending.classList.remove('pending');
         pending.textContent = data.text;
         status.textContent = '';
-        if (typeof ym === 'function') ym(107062766, 'reachGoal', 'timon_chat_reply');
+        window.TeamONAnalytics?.goal('timon_chat_reply');
       } catch (error) {
+        window.TeamONAnalytics?.goal('timon_chat_error');
         pending.classList.remove('pending');
         pending.textContent = error.message || 'Тимон временно недоступен. Попробуйте позже.';
         status.textContent = 'Сообщение не потерялось у вас — можно отправить снова';
@@ -1286,7 +1278,7 @@
 </script>
 
 <div id="contactModal" class="timon-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" onclick="if(event.target===this)closeTimonChat()">
-  <section class="timon-chat">
+  <section class="timon-chat ym-hide-content">
     <button class="timon-chat-close" type="button" aria-label="Закрыть" onclick="closeTimonChat()">&times;</button>
     <header class="timon-chat-head">
       <h3 id="contactModalTitle">Тимон · AI-практик TeamON</h3>
@@ -1295,9 +1287,9 @@
     <div id="timonLog" class="timon-chat-log" aria-live="polite">
       <div class="timon-message agent">Привет. Я Тимон. Опишите процесс, который забирает у команды время: кто его делает, как часто и где лежат данные.</div>
     </div>
-    <form id="timonForm" class="timon-form">
+    <form id="timonForm" class="timon-form ym-disable-submit">
       <div class="timon-composer">
-        <textarea id="timonInput" maxlength="2000" required placeholder="Например: менеджер каждый день вручную сводит остатки из трёх кабинетов…"></textarea>
+        <textarea id="timonInput" class="ym-disable-keys" maxlength="2000" required placeholder="Например: менеджер каждый день вручную сводит остатки из трёх кабинетов…"></textarea>
         <button id="timonSend" class="timon-send" type="submit">Отправить</button>
       </div>
       <div id="timonStatus" class="timon-chat-status" aria-live="polite"></div>
