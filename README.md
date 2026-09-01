@@ -1,6 +1,6 @@
-# team-on.ru static site
+# team-on.ru site
 
-Static HTML/CSS source for https://team-on.ru/.
+Landing page and the narrow public Timon chat ingress for https://team-on.ru/.
 
 Current production origin:
 
@@ -16,10 +16,18 @@ secrets.
 
 - `index.html` — main landing page.
 - `favicon.svg` — site icon.
+- `server.mjs` — same-origin Timon proxy: opaque browser sessions, message
+  limits, concurrency limits, and a server-held upstream token.
+- `server.test.mjs` — built-in Node tests for session isolation and limits.
+- `ops/timon-agent.json` — versioned public-agent identity and advisory-only
+  boundary; it contains no runtime credentials.
+- `ops/teamon-timon-web.service` and `ops/nginx-timon-locations.conf` —
+  production service and same-origin route templates.
 - `talk/`, `roadmap/`, `partners/`, `leadsell/`, `copilot/`, `main/` —
   static subpages.
 
 ## Deploy
 
-Deploy by syncing the repository contents to `/var/www/teamon` on the origin
-host and reloading nginx if the server configuration changed.
+Deploy static files to `/var/www/teamon`. Run `server.mjs` as an unprivileged
+loopback-only service and proxy `/api/timon/` to it from nginx. Runtime secrets
+belong in the server-local environment file and must never be committed.
