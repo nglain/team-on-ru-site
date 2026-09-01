@@ -1,0 +1,32 @@
+[Unit]
+Description=TeamON public Timon no-tools upstream
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/lib/timon-public
+EnvironmentFile=/etc/timon-public/upstream.env
+EnvironmentFile=/etc/timon-public/openrouter.env
+ExecStart=/usr/bin/node /opt/timon-public/upstream.mjs
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/timon-public
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=384M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

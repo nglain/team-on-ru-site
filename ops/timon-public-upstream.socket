@@ -1,0 +1,10 @@
+[Unit]
+Description=TeamON public Timon host ingress
+
+[Socket]
+ListenStream=75.119.132.175:38970
+NoDelay=true
+Service=timon-public-upstream-proxy.service
+
+[Install]
+WantedBy=sockets.target

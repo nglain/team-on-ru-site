@@ -1,0 +1,13 @@
+[Unit]
+Description=TeamON public Timon host to isolated no-tools upstream
+Requires=timon-public-upstream.socket
+After=network-online.target systemd-nspawn@ag-timon-public.service
+
+[Service]
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd 10.250.0.101:3902
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+NoNewPrivileges=true
+
