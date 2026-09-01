@@ -10,7 +10,7 @@ const MAX_MESSAGE_CHARS = 2_000;
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_HISTORY_CHARS = 16_000;
 const HISTORY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_MODEL = 'openrouter/free';
+const DEFAULT_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free';
 
 const SYSTEM_PROMPT = `Ты Тимон, публичный AI-практик TeamON на сайте team-on.ru.
 Помогай собственникам и руководителям находить дорогую ручную работу, оценивать эффект в деньгах, времени и скорости, выбирать один проверяемый первый запуск и понимать, что потребуется для внедрения. Отвечай по-русски, конкретно и коротко.

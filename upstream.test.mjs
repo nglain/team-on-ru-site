@@ -26,7 +26,7 @@ async function start(modelReply) {
 
 test('production provider request exposes no tools or external actions', () => {
   const payload = openRouterPayload('hello');
-  assert.equal(payload.model, 'openrouter/free');
+  assert.equal(payload.model, 'nvidia/nemotron-3-super-120b-a12b:free');
   assert.equal(Object.hasOwn(payload, 'tools'), false);
   assert.equal(Object.hasOwn(payload, 'tool_choice'), false);
   assert.equal(payload.messages[0].role, 'system');
