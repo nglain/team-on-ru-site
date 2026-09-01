@@ -10,7 +10,11 @@ const MAX_MESSAGE_CHARS = 2_000;
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_HISTORY_CHARS = 16_000;
 const HISTORY_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free';
+const DEFAULT_MODELS = [
+  'minimax/minimax-m3:free',
+  'nvidia/nemotron-3-super-120b-a12b:free',
+  'openrouter/free',
+];
 
 const SYSTEM_PROMPT = `Ты Тимон, публичный AI-практик TeamON на сайте team-on.ru.
 Помогай собственникам и руководителям находить дорогую ручную работу, оценивать эффект в деньгах, времени и скорости, выбирать один проверяемый первый запуск и понимать, что потребуется для внедрения. Отвечай по-русски, конкретно и коротко.
@@ -77,7 +81,7 @@ export function createNoToolsUpstream(options = {}) {
   });
 }
 
-export function openRouterPayload(prompt, model = DEFAULT_MODEL) {
+export function openRouterPayload(prompt, model = DEFAULT_MODELS[0]) {
   return {
     model,
     messages: [
@@ -91,29 +95,44 @@ export function openRouterPayload(prompt, model = DEFAULT_MODEL) {
 
 async function openRouterReply({ prompt }, { env }) {
   const apiKey = requiredSecret(env.OPENROUTER_API_KEY, 'OPENROUTER_API_KEY');
-  const timeoutMs = positiveInt(env.TIMON_PROVIDER_TIMEOUT_MS, 90_000);
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      'content-type': 'application/json',
-      'http-referer': 'https://team-on.ru',
-      'x-title': 'TeamON Timon',
-    },
-    body: JSON.stringify(openRouterPayload(prompt, env.TIMON_PUBLIC_MODEL || DEFAULT_MODEL)),
-    signal: AbortSignal.timeout(timeoutMs),
-  });
-  const data = await response.json().catch(() => null);
-  if (!response.ok) {
-    if (response.status === 401 || response.status === 403) throw new Error('provider_auth_failed');
-    if (response.status === 429) throw new Error('provider_rate_limited');
-    throw new Error(`provider_http_${response.status}`);
+  const models = String(env.TIMON_PUBLIC_MODELS || env.TIMON_PUBLIC_MODEL || DEFAULT_MODELS.join(','))
+    .split(',').map((item) => item.trim()).filter(Boolean).slice(0, 3);
+  const timeoutMs = positiveInt(env.TIMON_PROVIDER_TIMEOUT_MS, 75_000);
+  const attemptTimeoutMs = Math.max(5_000, Math.floor(timeoutMs / Math.max(1, models.length)));
+  let lastError = new Error('provider_failed');
+  for (const model of models) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+          'http-referer': 'https://team-on.ru',
+          'x-title': 'TeamON Timon',
+        },
+        body: JSON.stringify(openRouterPayload(prompt, model)),
+        signal: AbortSignal.timeout(attemptTimeoutMs),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) throw new Error('provider_auth_failed');
+        lastError = new Error(response.status === 429 ? 'provider_rate_limited' : `provider_http_${response.status}`);
+        continue;
+      }
+      const message = data?.choices?.[0]?.message;
+      if (Array.isArray(message?.tool_calls) && message.tool_calls.length) {
+        lastError = new Error('tool_use_blocked');
+        continue;
+      }
+      const answer = String(message?.content || '').trim();
+      if (answer) return answer;
+      lastError = new Error('provider_empty_response');
+    } catch (error) {
+      if (error?.message === 'provider_auth_failed') throw error;
+      lastError = error?.name === 'TimeoutError' ? new Error('provider_timeout') : error;
+    }
   }
-  const message = data?.choices?.[0]?.message;
-  if (Array.isArray(message?.tool_calls) && message.tool_calls.length) throw new Error('tool_use_blocked');
-  const answer = String(message?.content || '').trim();
-  if (!answer) throw new Error('provider_empty_response');
-  return answer;
+  throw lastError;
 }
 
 function conversationPrompt(messages, current) {
